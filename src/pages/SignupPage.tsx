@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2, CalendarIcon } from "lucide-react";
+import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2, CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -62,6 +61,7 @@ const SignupPage = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [birthYear, setBirthYear] = useState(new Date().getFullYear());
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -81,7 +81,6 @@ const SignupPage = () => {
     setSignupError(null);
 
     try {
-      // Simulating signup API call
       console.log("Signup attempt with:", data);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
@@ -104,7 +103,6 @@ const SignupPage = () => {
     const currentBirthdays = form.getValues().birthdays || [];
     const lastBirthday = currentBirthdays[currentBirthdays.length - 1];
     
-    // Check if the last birthday has both name and date
     if (!lastBirthday.name || !lastBirthday.date) {
       toast.error("Preencha o nome e a data do aniversariante atual antes de adicionar outro.");
       return;
@@ -124,6 +122,17 @@ const SignupPage = () => {
         currentBirthdays.filter((_, i) => i !== index)
       );
     }
+  };
+
+  const changeYear = (amount: number) => {
+    setBirthYear(prev => prev + amount);
+  };
+
+  const getYearRange = () => {
+    const currentYear = new Date().getFullYear();
+    const startYear = Math.max(1900, birthYear - 50);
+    const endYear = Math.min(currentYear, birthYear + 50);
+    return { from: new Date(startYear, 0, 1), to: new Date(endYear, 11, 31) };
   };
 
   return (
@@ -302,11 +311,60 @@ const SignupPage = () => {
                                     </FormControl>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-auto p-0" align="start">
+                                    <div className="p-2 flex justify-between items-center border-b">
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        onClick={() => changeYear(-10)}
+                                      >
+                                        <ChevronDown className="h-4 w-4" />
+                                        <span className="sr-only">10 anos atrás</span>
+                                      </Button>
+                                      <div className="flex gap-2 items-center">
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm"
+                                          onClick={() => changeYear(-1)}
+                                        >
+                                          <ChevronDown className="h-4 w-4" />
+                                          <span className="sr-only">Ano anterior</span>
+                                        </Button>
+                                        <span className="font-medium">{birthYear}</span>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm"
+                                          onClick={() => changeYear(1)}
+                                        >
+                                          <ChevronUp className="h-4 w-4" />
+                                          <span className="sr-only">Próximo ano</span>
+                                        </Button>
+                                      </div>
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm"
+                                        onClick={() => changeYear(10)}
+                                      >
+                                        <ChevronUp className="h-4 w-4" />
+                                        <span className="sr-only">10 anos depois</span>
+                                      </Button>
+                                    </div>
                                     <Calendar
                                       mode="single"
                                       selected={field.value}
-                                      onSelect={field.onChange}
-                                      className="pointer-events-auto"
+                                      onSelect={(date) => {
+                                        if (date) {
+                                          field.onChange(date);
+                                          setBirthYear(date.getFullYear());
+                                        }
+                                      }}
+                                      defaultMonth={
+                                        field.value || new Date(birthYear, 0, 1)
+                                      }
+                                      fromYear={1900}
+                                      toYear={new Date().getFullYear()}
+                                      captionLayout="dropdown-buttons"
+                                      fromDate={getYearRange().from}
+                                      toDate={getYearRange().to}
                                     />
                                   </PopoverContent>
                                 </Popover>
