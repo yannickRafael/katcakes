@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, KeyRound, User, Eye, EyeOff } from "lucide-react";
+import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2, CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +19,32 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+const birthdaySchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  date: z.date({
+    required_error: "Data de aniversário é obrigatória",
+  }),
+});
 
 const signupSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(1, "Confirmar senha é obrigatório"),
+  gender: z.enum(["masculino", "feminino", "outro", "prefiro_nao_informar"], {
+    required_error: "Gênero é obrigatório",
+  }),
+  birthdays: z.array(birthdaySchema).min(1, "Adicione pelo menos um aniversário"),
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos e condições",
   }),
@@ -34,6 +54,7 @@ const signupSchema = z.object({
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
+type BirthdayFormValues = z.infer<typeof birthdaySchema>;
 
 const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +69,8 @@ const SignupPage = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      gender: "prefiro_nao_informar",
+      birthdays: [{ name: "", date: new Date() }],
       acceptTerms: false,
     },
   });
@@ -73,6 +96,24 @@ const SignupPage = () => {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const addBirthday = () => {
+    const currentBirthdays = form.getValues().birthdays || [];
+    form.setValue("birthdays", [
+      ...currentBirthdays,
+      { name: "", date: new Date() }
+    ]);
+  };
+
+  const removeBirthday = (index: number) => {
+    const currentBirthdays = form.getValues().birthdays;
+    if (currentBirthdays.length > 1) {
+      form.setValue(
+        "birthdays",
+        currentBirthdays.filter((_, i) => i !== index)
+      );
     }
   };
 
@@ -145,6 +186,145 @@ const SignupPage = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gênero</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="masculino" id="masculino" />
+                            <FormLabel htmlFor="masculino" className="font-normal cursor-pointer">
+                              Masculino
+                            </FormLabel>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="feminino" id="feminino" />
+                            <FormLabel htmlFor="feminino" className="font-normal cursor-pointer">
+                              Feminino
+                            </FormLabel>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="outro" id="outro" />
+                            <FormLabel htmlFor="outro" className="font-normal cursor-pointer">
+                              Outro
+                            </FormLabel>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="prefiro_nao_informar" id="prefiro_nao_informar" />
+                            <FormLabel htmlFor="prefiro_nao_informar" className="font-normal cursor-pointer">
+                              Prefiro não informar
+                            </FormLabel>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="space-y-2">
+                  <FormLabel>Aniversários</FormLabel>
+                  <div className="space-y-3">
+                    {form.watch("birthdays")?.map((_, index) => (
+                      <div key={index} className="p-3 border rounded-md">
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className="text-sm font-medium">Aniversário {index + 1}</h4>
+                          {form.watch("birthdays").length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeBirthday(index)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <FormField
+                            control={form.control}
+                            name={`birthdays.${index}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nome</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="Nome da pessoa"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name={`birthdays.${index}.date`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Data de aniversário</FormLabel>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                        variant="outline"
+                                        className={cn(
+                                          "w-full pl-3 text-left font-normal flex justify-between",
+                                          !field.value && "text-muted-foreground"
+                                        )}
+                                      >
+                                        {field.value ? (
+                                          format(field.value, "dd/MM/yyyy")
+                                        ) : (
+                                          <span>Selecionar data</span>
+                                        )}
+                                        <CalendarIcon className="h-4 w-4 opacity-50" />
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={field.value}
+                                      onSelect={field.onChange}
+                                      className="pointer-events-auto"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={addBirthday}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Adicionar outro aniversário
+                    </Button>
+                  </div>
+                  {form.formState.errors.birthdays?.message && (
+                    <p className="text-sm font-medium text-destructive">
+                      {form.formState.errors.birthdays.message}
+                    </p>
+                  )}
+                </div>
 
                 <FormField
                   control={form.control}
