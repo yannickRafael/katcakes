@@ -24,10 +24,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// Define the valid topping types
+const VALID_TOPPINGS = [
+  "Vanilla Buttercream", "Chocolate Ganache", "Cream Cheese Frosting", 
+  "Chocolate Buttercream", "Whipped Cream", "Caramel"
+] as const;
+
+// Create a type from the array of valid toppings
+type ValidTopping = typeof VALID_TOPPINGS[number];
+
 const formSchema = z.object({
   details: z.object({
     flavor: z.string().min(1, "Please select a flavor"),
-    topping: z.string().min(1, "Please select a topping"),
+    topping: z.enum(VALID_TOPPINGS), // Use the enum to restrict values
     specialRequests: z.string().optional(),
     allergies: z.string().optional(),
   }),
@@ -46,11 +55,6 @@ const FLAVORS = [
   "Coffee", "Coconut", "Strawberry"
 ];
 
-const TOPPINGS = [
-  "Vanilla Buttercream", "Chocolate Ganache", "Cream Cheese Frosting", 
-  "Chocolate Buttercream", "Whipped Cream", "Caramel"
-];
-
 // Base price per cupcake
 const BASE_PRICE = 150;
 
@@ -62,7 +66,7 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
     defaultValues: {
       details: {
         flavor: FLAVORS[0],
-        topping: TOPPINGS[0],
+        topping: VALID_TOPPINGS[0],  // Use the first valid topping
         specialRequests: '',
         allergies: '',
       },
@@ -117,7 +121,7 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {TOPPINGS.map((topping) => (
+                    {VALID_TOPPINGS.map((topping) => (
                       <SelectItem key={topping} value={topping}>{topping}</SelectItem>
                     ))}
                   </SelectContent>

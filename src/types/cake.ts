@@ -12,7 +12,7 @@ export interface Cake {
     size?: '15cm' | '18cm' | '20cm' | '22cm' | '30cm';
     flavor?: string;
     filling?: string;
-    topping?: 'marzipan' | 'ganache' | 'buttercream';
+    topping?: 'marzipan' | 'ganache' | 'buttercream' | 'Vanilla Buttercream' | 'Chocolate Ganache' | 'Cream Cheese Frosting' | 'Chocolate Buttercream' | 'Whipped Cream' | 'Caramel';
   };
   quantity?: number;
 }
@@ -25,7 +25,7 @@ export interface CustomOrder {
     size?: '15cm' | '18cm' | '20cm' | '22cm' | '30cm';
     flavor?: string;
     filling?: string;
-    topping?: 'marzipan' | 'ganache' | 'buttercream';
+    topping?: 'marzipan' | 'ganache' | 'buttercream' | 'Vanilla Buttercream' | 'Chocolate Ganache' | 'Cream Cheese Frosting' | 'Chocolate Buttercream' | 'Whipped Cream' | 'Caramel';
     specialRequests?: string;
     allergies?: string;
   };
