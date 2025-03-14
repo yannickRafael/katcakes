@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Define a regex pattern for date validation (DD/MM/YYYY)
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/;
@@ -68,6 +68,8 @@ const SignupPage = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { signup } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -87,18 +89,20 @@ const SignupPage = () => {
     setSignupError(null);
 
     try {
-      console.log("Signup attempt with:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Extract just the user profile data (excluding auth-related fields)
+      const userProfileData = {
+        displayName: data.name,
+        gender: data.gender,
+        birthdays: data.birthdays,
+      };
       
-      // For demonstration - show error for testing
-      // setSignupError("Este email já está registrado.");
+      // Register the user with Firebase Authentication and store profile data
+      await signup(data.email, data.password, userProfileData);
       
-      // If successful, you would typically:
-      // 1. Register the user
-      // 2. Log them in automatically
-      // 3. Redirect to dashboard or home page
-    } catch (error) {
-      setSignupError("Erro ao criar conta. Por favor, tente novamente.");
+      // Redirect to home page after successful registration
+      navigate("/");
+    } catch (error: any) {
+      setSignupError(error.message || "Erro ao criar conta. Por favor, tente novamente.");
       console.error(error);
     } finally {
       setIsLoading(false);

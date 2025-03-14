@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
@@ -30,6 +31,8 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -44,19 +47,11 @@ const LoginPage = () => {
     setLoginError(null);
 
     try {
-      // Simulating login API call
-      console.log("Login attempt with:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // For demonstration - show error for testing
-      // setLoginError("Credenciais inválidas. Por favor, tente novamente.");
-      
-      // If successful, you would typically:
-      // 1. Set auth token in localStorage
-      // 2. Update user context
-      // 3. Redirect user to protected area
-    } catch (error) {
-      setLoginError("Erro ao fazer login. Por favor, tente novamente.");
+      await login(data.email, data.password);
+      // Redirect user to home page after successful login
+      navigate("/");
+    } catch (error: any) {
+      setLoginError(error.message || "Falha na autenticação. Por favor, tente novamente.");
       console.error(error);
     } finally {
       setIsLoading(false);
