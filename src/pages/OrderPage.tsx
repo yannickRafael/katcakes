@@ -29,9 +29,19 @@ const OrderPage = () => {
     
     // Show success message
     toast({
-      title: "Added to cart",
-      description: `Your custom ${order.category} has been added to your cart.`,
+      title: "Adicionado ao carrinho",
+      description: `Seu ${translateCategory(order.category)} personalizado foi adicionado ao carrinho.`,
     });
+  };
+
+  const translateCategory = (category: string): string => {
+    const translations: Record<string, string> = {
+      'cake': 'bolo',
+      'cupcake': 'cupcake',
+      'other': 'doce'
+    };
+    
+    return translations[category] || category;
   };
 
   const handleOrderSubmit = (formData: Omit<CustomOrder, 'id'>) => {
@@ -45,7 +55,7 @@ const OrderPage = () => {
     handleAddToCart(completeOrder);
     
     // Optionally navigate to cart
-    if (window.confirm('Item added to cart. Would you like to view your cart?')) {
+    if (window.confirm('Item adicionado ao carrinho. Gostaria de ver seu carrinho?')) {
       navigate('/cart');
     }
   };
@@ -53,16 +63,16 @@ const OrderPage = () => {
   return (
     <div className="pt-24 pb-16 md:pt-32 md:pb-24">
       <div className="katcakes-container max-w-4xl mx-auto">
-        <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">Create Your Custom Order</h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">Crie Sua Encomenda Personalizada</h1>
         <p className="text-katcakes-gray mb-8">
-          Design your perfect cake, cupcakes, or other sweet treats exactly how you want them.
+          Desenhe seu bolo perfeito, cupcakes ou outros doces exatamente como você deseja.
         </p>
 
         <Tabs defaultValue="cake" onValueChange={(value) => setActiveTab(value as any)}>
           <TabsList className="grid grid-cols-3 mb-8">
-            <TabsTrigger value="cake">Cakes</TabsTrigger>
+            <TabsTrigger value="cake">Bolos</TabsTrigger>
             <TabsTrigger value="cupcake">Cupcakes</TabsTrigger>
-            <TabsTrigger value="other">Other Sweets</TabsTrigger>
+            <TabsTrigger value="other">Outros Doces</TabsTrigger>
           </TabsList>
           
           <TabsContent value="cake">

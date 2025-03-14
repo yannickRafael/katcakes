@@ -13,7 +13,7 @@ const Footer = () => {
           <div>
             <Logo className="mb-4" textClassName="text-white" />
             <p className="text-white/70 mb-6">
-              Handcrafted with love in Maputo, Mozambique. Specializing in custom cakes, cupcakes, and sweet treats for all occasions.
+              Confeccionado com amor em Maputo, Moçambique. Especializado em bolos personalizados, cupcakes e doces para todas as ocasiões.
             </p>
             <div className="flex space-x-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-white/20 hover:bg-white/10 transition-colors">
@@ -32,35 +32,35 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-serif text-lg mb-6">Quick Links</h3>
+            <h3 className="font-serif text-lg mb-6">Links Rápidos</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-white/70 hover:text-white transition-colors">Home</Link>
+                <Link to="/" className="text-white/70 hover:text-white transition-colors">Início</Link>
               </li>
               <li>
-                <Link to="/cakes" className="text-white/70 hover:text-white transition-colors">Cakes</Link>
+                <Link to="/cakes" className="text-white/70 hover:text-white transition-colors">Bolos</Link>
               </li>
               <li>
-                <Link to="/order" className="text-white/70 hover:text-white transition-colors">Custom Order</Link>
+                <Link to="/order" className="text-white/70 hover:text-white transition-colors">Encomenda Personalizada</Link>
               </li>
               <li>
-                <Link to="/about" className="text-white/70 hover:text-white transition-colors">About Us</Link>
+                <Link to="/about" className="text-white/70 hover:text-white transition-colors">Sobre Nós</Link>
               </li>
               <li>
-                <Link to="/login" className="text-white/70 hover:text-white transition-colors">Login / Register</Link>
+                <Link to="/login" className="text-white/70 hover:text-white transition-colors">Entrar / Registrar</Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-serif text-lg mb-6">Contact Us</h3>
+            <h3 className="font-serif text-lg mb-6">Contacte-nos</h3>
             <ul className="space-y-3 text-white/70">
               <li className="flex items-start">
-                <span className="font-medium mr-2">Address:</span>
-                <span>123 Baker Street, Maputo, Mozambique</span>
+                <span className="font-medium mr-2">Endereço:</span>
+                <span>Rua 123, Maputo, Moçambique</span>
               </li>
               <li className="flex items-start">
-                <span className="font-medium mr-2">Phone:</span>
+                <span className="font-medium mr-2">Telefone:</span>
                 <a href="tel:+258123456789" className="hover:text-white transition-colors">+258 123 456 789</a>
               </li>
               <li className="flex items-start">
@@ -68,15 +68,15 @@ const Footer = () => {
                 <a href="mailto:info@katcakes.com" className="hover:text-white transition-colors">info@katcakes.com</a>
               </li>
               <li className="flex items-start">
-                <span className="font-medium mr-2">Hours:</span>
-                <span>Mon-Sat: 9am - 6pm</span>
+                <span className="font-medium mr-2">Horário:</span>
+                <span>Seg-Sáb: 9h - 18h</span>
               </li>
             </ul>
           </div>
         </div>
         
         <div className="pt-8 text-center text-white/50 text-sm">
-          <p>&copy; {currentYear} KatCakes by Kathy Da Berta Rafael. All rights reserved.</p>
+          <p>&copy; {currentYear} KatCakes por Kathy Da Berta Rafael. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

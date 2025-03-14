@@ -35,7 +35,7 @@ type ValidTopping = typeof VALID_TOPPINGS[number];
 
 const formSchema = z.object({
   details: z.object({
-    flavor: z.string().min(1, "Please select a flavor"),
+    flavor: z.string().min(1, "Por favor selecione um sabor"),
     topping: z.enum(VALID_TOPPINGS), // Use the enum to restrict values
     specialRequests: z.string().optional(),
     allergies: z.string().optional(),
@@ -51,9 +51,19 @@ interface CupcakeOrderFormProps {
 }
 
 const FLAVORS = [
-  "Vanilla", "Chocolate", "Red Velvet", "Lemon", "Carrot", 
-  "Coffee", "Coconut", "Strawberry"
+  "Baunilha", "Chocolate", "Red Velvet", "Limão", "Cenoura", 
+  "Café", "Coco", "Morango"
 ];
+
+// Portuguese translations for toppings
+const PORTUGUESE_TOPPINGS: Record<ValidTopping, string> = {
+  "Vanilla Buttercream": "Creme de Baunilha",
+  "Chocolate Ganache": "Ganache de Chocolate",
+  "Cream Cheese Frosting": "Cobertura de Cream Cheese",
+  "Chocolate Buttercream": "Creme de Chocolate",
+  "Whipped Cream": "Chantilly",
+  "Caramel": "Caramelo"
+};
 
 // Base price per cupcake
 const BASE_PRICE = 150;
@@ -90,11 +100,11 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
             name="details.flavor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Flavor</FormLabel>
+                <FormLabel>Sabor</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select flavor" />
+                      <SelectValue placeholder="Selecione o sabor" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -113,16 +123,18 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
             name="details.topping"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Topping</FormLabel>
+                <FormLabel>Cobertura</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select topping" />
+                      <SelectValue placeholder="Selecione a cobertura" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {VALID_TOPPINGS.map((topping) => (
-                      <SelectItem key={topping} value={topping}>{topping}</SelectItem>
+                      <SelectItem key={topping} value={topping}>
+                        {PORTUGUESE_TOPPINGS[topping]}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -137,7 +149,7 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
           name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantity (Minimum 6)</FormLabel>
+              <FormLabel>Quantidade (Mínimo 6)</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 
@@ -152,7 +164,7 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
                 />
               </FormControl>
               <FormDescription>
-                Cupcakes are sold in minimum quantities of 6.
+                Cupcakes são vendidos em quantidades mínimas de 6.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -164,10 +176,10 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
           name="details.specialRequests"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Special Requests & Decoration</FormLabel>
+              <FormLabel>Pedidos Especiais & Decoração</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Please describe any specific decorations or special requests you have for your cupcakes"
+                  placeholder="Por favor descreva quaisquer decorações específicas ou pedidos especiais que você tenha para seus cupcakes"
                   {...field}
                 />
               </FormControl>
@@ -181,10 +193,10 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
           name="details.allergies"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Allergies or Dietary Restrictions</FormLabel>
+              <FormLabel>Alergias ou Restrições Alimentares</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Please list any allergies or dietary restrictions we should be aware of"
+                  placeholder="Por favor liste quaisquer alergias ou restrições alimentares que devemos considerar"
                   {...field}
                 />
               </FormControl>
@@ -195,12 +207,12 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
 
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-medium">Total Price:</span>
+            <span className="text-lg font-medium">Preço Total:</span>
             <span className="text-2xl font-serif font-bold">{form.getValues('price')} MT</span>
           </div>
           
           <Button type="submit" className="w-full">
-            Add to Cart
+            Adicionar ao Carrinho
           </Button>
         </div>
       </form>

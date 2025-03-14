@@ -1,8 +1,9 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Menu, ShoppingCart, X } from 'lucide-react';
 import Logo from './ui/Logo';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { useMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -55,91 +56,101 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Cakes', path: '/cakes' },
-    { label: 'Order', path: '/order' },
-    { label: 'About', path: '/about' },
+    { label: 'Início', to: '/' },
+    { label: 'Bolos', to: '/cakes' },
+    { label: 'Encomenda', to: '/order' },
+    { label: 'Sobre', to: '/about' },
   ];
-
-  const isActivePath = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
-    return false;
-  };
 
   return (
     <header 
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-2' : 'bg-transparent py-4'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled || isMobileMenuOpen ? 'bg-white shadow-sm' : 'bg-transparent'
       }`}
     >
-      <div className="katcakes-container flex justify-between items-center">
-        <Logo />
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
+      <div className="katcakes-container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <Logo />
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navLinks.map(link => (
+              <Link 
+                key={link.to}
+                to={link.to} 
+                className={`hover:text-katcakes-black transition-colors ${
+                  location.pathname === link.to 
+                    ? 'text-katcakes-black font-medium' 
+                    : 'text-katcakes-gray'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          
+          {/* Desktop Right Links */}
+          <div className="hidden md:flex items-center space-x-2">
             <Link 
-              key={link.path} 
-              to={link.path} 
-              className={`nav-link ${isActivePath(link.path) ? 'active' : ''}`}
+              to="/login" 
+              className="px-3 py-2 hover:bg-katcakes-lightgray rounded transition-colors"
             >
-              {link.label}
+              Entrar
             </Link>
-          ))}
-        </nav>
-        
-        <div className="hidden md:flex items-center space-x-4">
-          <Link to="/login" className="text-sm font-medium hover:text-katcakes-gray transition-colors">
-            Log In
-          </Link>
-          <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
-            <ShoppingCart size={20} />
-            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-              {cartItemCount}
-            </span>
-          </Link>
-        </div>
-        
-        {/* Mobile Menu Button */}
-        <div className="flex items-center space-x-3 md:hidden">
-          <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
-            <ShoppingCart size={20} />
-            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-              {cartItemCount}
-            </span>
-          </Link>
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-            className="p-2 hover:bg-katcakes-lightgray rounded-full transition-colors"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
+              <ShoppingCart size={20} />
+              <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                {cartItemCount}
+              </span>
+            </Link>
+          </div>
+          
+          {/* Mobile Right Links */}
+          <div className="flex items-center space-x-3 md:hidden">
+            <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
+              <ShoppingCart size={20} />
+              <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                {cartItemCount}
+              </span>
+            </Link>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+              className="p-2 hover:bg-katcakes-lightgray rounded-full transition-colors"
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </div>
       
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-16 bg-white z-40 md:hidden animate-fade-in">
-          <nav className="flex flex-col p-8 space-y-6">
-            {navLinks.map((link) => (
+        <div className="md:hidden bg-white border-t border-gray-100">
+          <div className="katcakes-container mx-auto px-4 py-4">
+            <nav className="flex flex-col space-y-4">
+              {navLinks.map(link => (
+                <Link 
+                  key={link.to}
+                  to={link.to} 
+                  className={`py-2 ${
+                    location.pathname === link.to 
+                      ? 'text-katcakes-black font-medium' 
+                      : 'text-katcakes-gray'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
               <Link 
-                key={link.path} 
-                to={link.path} 
+                to="/login" 
+                className="py-2 text-katcakes-gray"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`text-xl font-serif ${isActivePath(link.path) ? 'font-medium' : ''}`}
               >
-                {link.label}
+                Entrar
               </Link>
-            ))}
-            <Link 
-              to="/login" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="text-xl font-serif"
-            >
-              Log In
-            </Link>
-          </nav>
+            </nav>
+          </div>
         </div>
       )}
     </header>

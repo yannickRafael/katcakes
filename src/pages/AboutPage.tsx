@@ -8,9 +8,9 @@ const AboutPage = () => {
       <section className="relative py-20 bg-katcakes-lightgray">
         <div className="katcakes-container">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-serif mb-4">About KatCakes</h1>
+            <h1 className="text-4xl md:text-5xl font-serif mb-4">Sobre KatCakes</h1>
             <p className="text-katcakes-gray text-lg">
-              Artisanal home bakery crafting sweet memories in Maputo.
+              Confeitaria artesanal criando doces memórias em Maputo.
             </p>
           </div>
         </div>
@@ -24,23 +24,23 @@ const AboutPage = () => {
               <div className="rounded-lg overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1559620192-032c4bc4674e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3" 
-                  alt="KatCakes founder" 
+                  alt="Fundadora KatCakes" 
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
             <div>
-              <span className="block text-sm uppercase tracking-wider mb-2">Our Story</span>
-              <h2 className="text-3xl md:text-4xl font-serif mb-6">The KatCakes Journey</h2>
+              <span className="block text-sm uppercase tracking-wider mb-2">Nossa História</span>
+              <h2 className="text-3xl md:text-4xl font-serif mb-6">A Jornada KatCakes</h2>
               <p className="text-katcakes-gray mb-4">
-                KatCakes began in 2018 when Kathy Da Berta Rafael started baking from her home kitchen in Maputo. 
-                What started as a passion for creating delicious treats for family and friends quickly blossomed into a thriving home bakery.
+                KatCakes começou em 2018 quando Kathy Da Berta Rafael começou a confeitaria na cozinha de sua casa em Maputo. 
+                O que começou como uma paixão por criar deliciosas guloseimas para familiares e amigos rapidamente floresceu em uma próspera confeitaria caseira.
               </p>
               <p className="text-katcakes-gray mb-4">
-                Driven by a belief that every celebration deserves something special, Kathy honed her craft through experimentation, training, and an unwavering commitment to quality.
+                Motivada pela crença de que cada celebração merece algo especial, Kathy aperfeiçoou sua arte através da experimentação, treinamento e um compromisso inabalável com a qualidade.
               </p>
               <p className="text-katcakes-gray">
-                Today, KatCakes is known throughout Maputo for its artisanal approach, exceptional flavors, and beautiful designs that bring joy to every occasion.
+                Hoje, KatCakes é conhecida em todo Maputo por sua abordagem artesanal, sabores excepcionais e designs bonitos que trazem alegria para todas as ocasiões.
               </p>
             </div>
           </div>
@@ -51,32 +51,32 @@ const AboutPage = () => {
       <section className="py-16 bg-katcakes-lightgray">
         <div className="katcakes-container">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="block text-sm uppercase tracking-wider mb-2">Our Philosophy</span>
-            <h2 className="text-3xl md:text-4xl font-serif mb-6">What We Value</h2>
+            <span className="block text-sm uppercase tracking-wider mb-2">Nossa Filosofia</span>
+            <h2 className="text-3xl md:text-4xl font-serif mb-6">O Que Valorizamos</h2>
             <p className="text-katcakes-gray">
-              At KatCakes, our work is guided by core principles that ensure every creation exceeds expectations.
+              Na KatCakes, nosso trabalho é guiado por princípios fundamentais que garantem que cada criação supere as expectativas.
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-lg">
-              <h3 className="font-serif text-xl mb-4">Quality Ingredients</h3>
+              <h3 className="font-serif text-xl mb-4">Ingredientes de Qualidade</h3>
               <p className="text-katcakes-gray">
-                We use only the finest, freshest ingredients in every creation. No compromises, no shortcuts.
+                Usamos apenas os melhores e mais frescos ingredientes em cada criação. Sem compromissos, sem atalhos.
               </p>
             </div>
             
             <div className="bg-white p-8 rounded-lg">
-              <h3 className="font-serif text-xl mb-4">Artisanal Approach</h3>
+              <h3 className="font-serif text-xl mb-4">Abordagem Artesanal</h3>
               <p className="text-katcakes-gray">
-                Each cake is handcrafted with meticulous attention to detail, ensuring a unique and special result.
+                Cada bolo é feito à mão com atenção meticulosa aos detalhes, garantindo um resultado único e especial.
               </p>
             </div>
             
             <div className="bg-white p-8 rounded-lg">
-              <h3 className="font-serif text-xl mb-4">Customer Happiness</h3>
+              <h3 className="font-serif text-xl mb-4">Felicidade do Cliente</h3>
               <p className="text-katcakes-gray">
-                Your satisfaction is our priority. We work closely with you to bring your vision to life.
+                Sua satisfação é nossa prioridade. Trabalhamos em estreita colaboração com você para dar vida à sua visão.
               </p>
             </div>
           </div>
@@ -88,23 +88,23 @@ const AboutPage = () => {
         <div className="katcakes-container">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
-              <span className="block text-sm uppercase tracking-wider mb-2">Meet the Baker</span>
+              <span className="block text-sm uppercase tracking-wider mb-2">Conheça a Confeiteira</span>
               <h2 className="text-3xl md:text-4xl font-serif mb-6">Kathy Da Berta Rafael</h2>
               <p className="text-katcakes-gray mb-4">
-                Kathy's journey in the world of baking began in her grandmother's kitchen, where she learned traditional recipes and techniques that formed the foundation of KatCakes.
+                A jornada de Kathy no mundo da confeitaria começou na cozinha de sua avó, onde aprendeu receitas e técnicas tradicionais que formaram a base da KatCakes.
               </p>
               <p className="text-katcakes-gray mb-4">
-                With formal training in pastry arts and years of experience, Kathy combines technical expertise with artistic flair to create cakes that are as beautiful as they are delicious.
+                Com formação formal em artes de confeitaria e anos de experiência, Kathy combina expertise técnica com toque artístico para criar bolos que são tão bonitos quanto deliciosos.
               </p>
               <p className="text-katcakes-gray">
-                "Baking is my form of creative expression and bringing joy through my creations is what drives me every day." - Kathy
+                "Confeitaria é minha forma de expressão criativa e trazer alegria através das minhas criações é o que me move todos os dias." - Kathy
               </p>
             </div>
             <div className="relative">
               <div className="rounded-lg overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1556911073-38141963c9e0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3" 
-                  alt="Kathy baking" 
+                  alt="Kathy confeitando" 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -117,23 +117,23 @@ const AboutPage = () => {
       <section className="py-16 bg-katcakes-lightgray">
         <div className="katcakes-container">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="block text-sm uppercase tracking-wider mb-2">Get In Touch</span>
-            <h2 className="text-3xl md:text-4xl font-serif mb-6">Contact Us</h2>
+            <span className="block text-sm uppercase tracking-wider mb-2">Entre em Contacto</span>
+            <h2 className="text-3xl md:text-4xl font-serif mb-6">Contacte-nos</h2>
             <p className="text-katcakes-gray">
-              Have questions or want to place an order? We'd love to hear from you!
+              Tem perguntas ou quer fazer um pedido? Adoraríamos ouvir de você!
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-10">
             <div className="bg-white p-8 rounded-lg">
-              <h3 className="font-serif text-xl mb-6">Contact Information</h3>
+              <h3 className="font-serif text-xl mb-6">Informações de Contacto</h3>
               <ul className="space-y-4 text-katcakes-gray">
                 <li className="flex items-start">
-                  <span className="font-medium mr-2">Address:</span>
-                  <span>123 Baker Street, Maputo, Mozambique</span>
+                  <span className="font-medium mr-2">Endereço:</span>
+                  <span>Rua 123, Maputo, Moçambique</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="font-medium mr-2">Phone:</span>
+                  <span className="font-medium mr-2">Telefone:</span>
                   <a href="tel:+258123456789" className="hover:text-katcakes-black transition-colors">+258 123 456 789</a>
                 </li>
                 <li className="flex items-start">
@@ -141,26 +141,26 @@ const AboutPage = () => {
                   <a href="mailto:info@katcakes.com" className="hover:text-katcakes-black transition-colors">info@katcakes.com</a>
                 </li>
                 <li className="flex items-start">
-                  <span className="font-medium mr-2">Hours:</span>
+                  <span className="font-medium mr-2">Horário:</span>
                   <div>
-                    <p>Monday - Friday: 9am - 6pm</p>
-                    <p>Saturday: 10am - 4pm</p>
-                    <p>Sunday: Closed</p>
+                    <p>Segunda - Sexta: 9h - 18h</p>
+                    <p>Sábado: 10h - 16h</p>
+                    <p>Domingo: Fechado</p>
                   </div>
                 </li>
               </ul>
             </div>
             
             <div className="bg-white p-8 rounded-lg">
-              <h3 className="font-serif text-xl mb-6">Send a Message</h3>
+              <h3 className="font-serif text-xl mb-6">Envie uma Mensagem</h3>
               <form className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
+                  <label htmlFor="name" className="block text-sm font-medium mb-1">Nome</label>
                   <input 
                     type="text" 
                     id="name" 
                     className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-katcakes-black"
-                    placeholder="Your name"
+                    placeholder="Seu nome"
                   />
                 </div>
                 <div>
@@ -169,23 +169,23 @@ const AboutPage = () => {
                     type="email" 
                     id="email" 
                     className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-katcakes-black"
-                    placeholder="Your email"
+                    placeholder="Seu email"
                   />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-1">Message</label>
+                  <label htmlFor="message" className="block text-sm font-medium mb-1">Mensagem</label>
                   <textarea 
                     id="message" 
                     rows={4}
                     className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-katcakes-black"
-                    placeholder="Your message"
+                    placeholder="Sua mensagem"
                   ></textarea>
                 </div>
                 <button 
                   type="submit" 
                   className="w-full bg-katcakes-black text-white py-2 rounded hover:bg-katcakes-darkgray transition-colors"
                 >
-                  Send Message
+                  Enviar Mensagem
                 </button>
               </form>
             </div>

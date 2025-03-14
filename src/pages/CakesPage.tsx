@@ -17,9 +17,9 @@ const CakesPage = () => {
       {/* Header */}
       <section className="py-12 bg-katcakes-lightgray">
         <div className="katcakes-container text-center">
-          <h1 className="text-4xl md:text-5xl font-serif mb-4">Our Delicious Creations</h1>
+          <h1 className="text-4xl md:text-5xl font-serif mb-4">Nossas Deliciosas Criações</h1>
           <p className="text-katcakes-gray max-w-2xl mx-auto">
-            Browse our collection of handcrafted cakes, cupcakes, and other sweet treats. Each creation is made with the finest ingredients and baked with love.
+            Explore nossa coleção de bolos artesanais, cupcakes e outros doces. Cada criação é feita com os melhores ingredientes e confeccionada com amor.
           </p>
         </div>
       </section>
@@ -36,7 +36,7 @@ const CakesPage = () => {
                   : 'text-katcakes-gray hover:text-katcakes-black transition-colors'
               }`}
             >
-              All Products
+              Todos os Produtos
             </button>
             <button 
               onClick={() => setActiveCategory('cake')}
@@ -46,7 +46,7 @@ const CakesPage = () => {
                   : 'text-katcakes-gray hover:text-katcakes-black transition-colors'
               }`}
             >
-              Cakes
+              Bolos
             </button>
             <button 
               onClick={() => setActiveCategory('cupcake')}
@@ -66,7 +66,7 @@ const CakesPage = () => {
                   : 'text-katcakes-gray hover:text-katcakes-black transition-colors'
               }`}
             >
-              Other Sweets
+              Outros Doces
             </button>
           </div>
         </div>
@@ -77,7 +77,7 @@ const CakesPage = () => {
         <div className="katcakes-container">
           {filteredCakes.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-katcakes-gray">No products found in this category.</p>
+              <p className="text-katcakes-gray">Nenhum produto encontrado nesta categoria.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -92,15 +92,15 @@ const CakesPage = () => {
       {/* CTA Section */}
       <section className="py-16 bg-katcakes-lightgray">
         <div className="katcakes-container text-center">
-          <h2 className="text-3xl md:text-4xl font-serif mb-4">Can't Find What You're Looking For?</h2>
+          <h2 className="text-3xl md:text-4xl font-serif mb-4">Não Encontrou o Que Procura?</h2>
           <p className="text-katcakes-gray max-w-2xl mx-auto mb-8">
-            We specialize in custom creations. Tell us about your dream cake and we'll bring it to life.
+            Nós nos especializamos em criações personalizadas. Conte-nos sobre o bolo dos seus sonhos e nós o tornaremos realidade.
           </p>
           <a 
             href="/order" 
             className="bg-katcakes-black text-white px-8 py-3 inline-block hover:bg-katcakes-darkgray transition-colors"
           >
-            Create Custom Order
+            Criar Encomenda Personalizada
           </a>
         </div>
       </section>

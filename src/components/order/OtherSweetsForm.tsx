@@ -19,7 +19,7 @@ import {
 
 const formSchema = z.object({
   details: z.object({
-    specialRequests: z.string().min(10, "Please provide more details about your request"),
+    specialRequests: z.string().min(10, "Por favor forneça mais detalhes sobre seu pedido"),
     allergies: z.string().optional(),
   }),
   price: z.number().default(0),
@@ -62,10 +62,10 @@ const OtherSweetsForm = ({ onSubmit }: OtherSweetsFormProps) => {
           name="details.specialRequests"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Describe Your Sweet Request</FormLabel>
+              <FormLabel>Descreva Seu Pedido de Doces</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Please describe in detail what kind of sweet treat you would like us to create for you"
+                  placeholder="Por favor descreva em detalhes que tipo de doce você gostaria que criássemos para você"
                   className="min-h-[150px]"
                   {...field}
                   onChange={(e) => {
@@ -75,7 +75,7 @@ const OtherSweetsForm = ({ onSubmit }: OtherSweetsFormProps) => {
                 />
               </FormControl>
               <FormDescription>
-                Be as specific as possible about the type of sweet, flavor, quantity, and any special requirements.
+                Seja o mais específico possível sobre o tipo de doce, sabor, quantidade e quaisquer requisitos especiais.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -87,7 +87,7 @@ const OtherSweetsForm = ({ onSubmit }: OtherSweetsFormProps) => {
           name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantity</FormLabel>
+              <FormLabel>Quantidade</FormLabel>
               <FormControl>
                 <Input 
                   type="number" 
@@ -106,10 +106,10 @@ const OtherSweetsForm = ({ onSubmit }: OtherSweetsFormProps) => {
           name="details.allergies"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Allergies or Dietary Restrictions</FormLabel>
+              <FormLabel>Alergias ou Restrições Alimentares</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Please list any allergies or dietary restrictions we should be aware of"
+                  placeholder="Por favor liste quaisquer alergias ou restrições alimentares que devemos considerar"
                   {...field}
                 />
               </FormControl>
@@ -121,15 +121,15 @@ const OtherSweetsForm = ({ onSubmit }: OtherSweetsFormProps) => {
         {showPriceNote && (
           <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
             <p className="text-katcakes-gray text-sm">
-              The price for custom sweet treats will be determined after we review your request. 
-              We'll contact you with a quote before processing your order.
+              O preço para doces personalizados será determinado após analisarmos o seu pedido. 
+              Entraremos em contato com um orçamento antes de processar o seu pedido.
             </p>
           </div>
         )}
 
         <div className="pt-4 border-t border-gray-200">
           <Button type="submit" className="w-full">
-            Submit Request
+            Enviar Pedido
           </Button>
         </div>
       </form>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CartItem, Cake, CustomOrder } from '@/types/cake';
@@ -39,8 +40,8 @@ const CartPage = () => {
     updateCart(updatedCart);
     
     toast({
-      title: "Item removed",
-      description: "The item has been removed from your cart.",
+      title: "Item removido",
+      description: "O item foi removido do seu carrinho.",
     });
   };
 
@@ -97,10 +98,32 @@ const CartPage = () => {
     // For now, we'll just show a toast message
     toast({
       title: "Checkout",
-      description: "Proceeding to checkout...",
+      description: "Prosseguindo para o checkout...",
     });
     // In a real app, you would navigate to checkout page
     // navigate('/checkout');
+  };
+
+  const translateCategory = (category: string): string => {
+    const translations: Record<string, string> = {
+      'cake': 'Bolo',
+      'cupcake': 'Cupcake',
+      'other': 'Doce'
+    };
+    
+    return translations[category] || category;
+  };
+
+  const translateDetail = (detail: string): string => {
+    const translations: Record<string, string> = {
+      'Shape': 'Formato',
+      'Size': 'Tamanho',
+      'Flavor': 'Sabor',
+      'Filling': 'Recheio',
+      'Topping': 'Cobertura'
+    };
+    
+    return translations[detail] || detail;
   };
 
   const renderItemDetails = (item: CartItem) => {
@@ -126,17 +149,17 @@ const CartPage = () => {
       return (
         <div>
           <h3 className="font-medium text-lg">
-            Custom {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+            {translateCategory(item.category)} Personalizado
           </h3>
           <div className="text-sm text-gray-600 mt-2 space-y-1">
-            {item.details.shape && <p>Shape: {item.details.shape}</p>}
-            {item.details.size && <p>Size: {item.details.size}</p>}
-            {item.details.flavor && <p>Flavor: {item.details.flavor}</p>}
-            {item.details.filling && <p>Filling: {item.details.filling}</p>}
-            {item.details.topping && <p>Topping: {item.details.topping}</p>}
+            {item.details.shape && <p>Formato: {item.details.shape}</p>}
+            {item.details.size && <p>Tamanho: {item.details.size}</p>}
+            {item.details.flavor && <p>Sabor: {item.details.flavor}</p>}
+            {item.details.filling && <p>Recheio: {item.details.filling}</p>}
+            {item.details.topping && <p>Cobertura: {item.details.topping}</p>}
             {item.category === 'other' && item.details.specialRequests && (
               <div className="mt-2">
-                <p className="font-medium">Special Request:</p>
+                <p className="font-medium">Pedido Especial:</p>
                 <p className="text-gray-600">{item.details.specialRequests}</p>
               </div>
             )}
@@ -153,7 +176,7 @@ const CartPage = () => {
       <div className="katcakes-container max-w-5xl mx-auto">
         <div className="flex items-center mb-8">
           <ShoppingCart size={24} className="mr-2" />
-          <h1 className="font-serif text-3xl md:text-4xl font-bold">Your Cart</h1>
+          <h1 className="font-serif text-3xl md:text-4xl font-bold">Seu Carrinho</h1>
         </div>
 
         {isEmpty ? (
@@ -161,14 +184,14 @@ const CartPage = () => {
             <div className="flex justify-center mb-4">
               <ShoppingCart size={64} className="text-gray-300" />
             </div>
-            <h2 className="text-2xl font-serif mb-2">Your cart is empty</h2>
-            <p className="text-katcakes-gray mb-8">Looks like you haven't added any items to your cart yet.</p>
+            <h2 className="text-2xl font-serif mb-2">Seu carrinho está vazio</h2>
+            <p className="text-katcakes-gray mb-8">Parece que você ainda não adicionou nenhum item ao seu carrinho.</p>
             <div className="flex flex-col md:flex-row gap-4 justify-center">
               <Link to="/cakes">
-                <Button variant="default">Browse Cakes</Button>
+                <Button variant="default">Explorar Bolos</Button>
               </Link>
               <Link to="/order">
-                <Button variant="outline">Create Custom Order</Button>
+                <Button variant="outline">Criar Encomenda Personalizada</Button>
               </Link>
             </div>
           </div>
@@ -210,7 +233,7 @@ const CartPage = () => {
                           <button 
                             onClick={() => handleRemoveItem(item.id)}
                             className="ml-4 p-2 text-katcakes-gray hover:text-katcakes-red transition-colors"
-                            aria-label="Remove item"
+                            aria-label="Remover item"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -223,14 +246,14 @@ const CartPage = () => {
 
               <div className="mt-6">
                 <Link to="/order" className="text-katcakes-black hover:underline inline-flex items-center">
-                  <Plus size={16} className="mr-1" /> Add Another Item
+                  <Plus size={16} className="mr-1" /> Adicionar Outro Item
                 </Link>
               </div>
             </div>
 
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-24">
-                <h2 className="font-serif text-xl font-medium mb-4">Order Summary</h2>
+                <h2 className="font-serif text-xl font-medium mb-4">Resumo do Pedido</h2>
                 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
@@ -238,8 +261,8 @@ const CartPage = () => {
                     <span>{calculateTotal()} MT</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-katcakes-gray">Delivery</span>
-                    <span>TBD</span>
+                    <span className="text-katcakes-gray">Entrega</span>
+                    <span>A definir</span>
                   </div>
                 </div>
                 
@@ -252,12 +275,12 @@ const CartPage = () => {
 
                 <div className="space-y-4">
                   <Button onClick={handleCheckout} className="w-full">
-                    Proceed to Checkout
+                    Finalizar Compra
                   </Button>
                   
                   <div className="flex items-center text-sm text-katcakes-gray justify-center">
                     <AlertCircle size={14} className="mr-1" />
-                    <span>Delivery details will be confirmed at checkout</span>
+                    <span>Detalhes de entrega serão confirmados no checkout</span>
                   </div>
                 </div>
               </div>

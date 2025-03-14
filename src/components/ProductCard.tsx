@@ -49,8 +49,8 @@ const ProductCard = ({ cake, className = '' }: ProductCardProps) => {
     
     // Show success message
     toast({
-      title: "Added to cart",
-      description: `${cake.name} has been added to your cart.`,
+      title: "Adicionado ao carrinho",
+      description: `${cake.name} foi adicionado ao seu carrinho.`,
     });
     
     setTimeout(() => {
@@ -77,13 +77,13 @@ const ProductCard = ({ cake, className = '' }: ProductCardProps) => {
               to={`/cakes/${cake.id}`}
               className="text-sm px-4 py-2 border border-katcakes-black text-katcakes-black rounded hover:bg-katcakes-black hover:text-white transition-colors"
             >
-              Details
+              Detalhes
             </Link>
             <button 
               className={`${
                 isAdding ? 'bg-green-600' : 'bg-katcakes-black'
               } text-white p-2 rounded flex items-center justify-center hover:bg-katcakes-darkgray transition-colors`}
-              aria-label="Add to cart"
+              aria-label="Adicionar ao carrinho"
               onClick={handleAddToCart}
             >
               <ShoppingCart size={18} />

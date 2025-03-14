@@ -29,8 +29,8 @@ const formSchema = z.object({
   details: z.object({
     shape: z.enum(['round', 'rectangle']),
     size: z.enum(['15cm', '18cm', '20cm', '22cm', '30cm']),
-    flavor: z.string().min(1, "Please select a flavor"),
-    filling: z.string().min(1, "Please select a filling"),
+    flavor: z.string().min(1, "Por favor selecione um sabor"),
+    filling: z.string().min(1, "Por favor selecione um recheio"),
     topping: z.enum(['marzipan', 'ganache', 'buttercream']),
     specialRequests: z.string().optional(),
     allergies: z.string().optional(),
@@ -46,13 +46,13 @@ interface CakeOrderFormProps {
 }
 
 const FLAVORS = [
-  "Vanilla", "Chocolate", "Red Velvet", "Lemon", "Carrot", 
-  "Coffee", "Coconut", "Strawberry", "Orange", "Banana"
+  "Baunilha", "Chocolate", "Red Velvet", "Limão", "Cenoura", 
+  "Café", "Coco", "Morango", "Laranja", "Banana"
 ];
 
 const FILLINGS = [
-  "Vanilla Buttercream", "Chocolate Ganache", "Cream Cheese", "Dulce de Leche",
-  "Lemon Curd", "Strawberry Jam", "Raspberry Jam", "Chocolate Buttercream", "Coffee Buttercream"
+  "Creme de Baunilha", "Ganache de Chocolate", "Cream Cheese", "Doce de Leite",
+  "Creme de Limão", "Geléia de Morango", "Geléia de Framboesa", "Creme de Chocolate", "Creme de Café"
 ];
 
 // Price calculation based on size
@@ -97,6 +97,25 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
     form.setValue('price', basePrice * qty);
   };
 
+  const translateToppingOptions = (option: string): string => {
+    const translations: Record<string, string> = {
+      'marzipan': 'Pasta Americana',
+      'ganache': 'Ganache',
+      'buttercream': 'Creme de Manteiga'
+    };
+    
+    return translations[option] || option;
+  };
+
+  const translateShape = (shape: string): string => {
+    const translations: Record<string, string> = {
+      'round': 'Redondo',
+      'rectangle': 'Retangular'
+    };
+    
+    return translations[shape] || shape;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -107,7 +126,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="details.shape"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Cake Shape</FormLabel>
+                  <FormLabel>Formato do Bolo</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -116,11 +135,11 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="round" id="shape-round" />
-                        <FormLabel htmlFor="shape-round" className="font-normal cursor-pointer">Round</FormLabel>
+                        <FormLabel htmlFor="shape-round" className="font-normal cursor-pointer">Redondo</FormLabel>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="rectangle" id="shape-rectangle" />
-                        <FormLabel htmlFor="shape-rectangle" className="font-normal cursor-pointer">Rectangle</FormLabel>
+                        <FormLabel htmlFor="shape-rectangle" className="font-normal cursor-pointer">Retangular</FormLabel>
                       </div>
                     </RadioGroup>
                   </FormControl>
@@ -134,7 +153,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="details.size"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Size</FormLabel>
+                  <FormLabel>Tamanho</FormLabel>
                   <Select 
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -144,7 +163,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select size" />
+                        <SelectValue placeholder="Selecione o tamanho" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -165,11 +184,11 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="details.flavor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Flavor</FormLabel>
+                  <FormLabel>Sabor</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select flavor" />
+                        <SelectValue placeholder="Selecione o sabor" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -190,11 +209,11 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="details.filling"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Filling</FormLabel>
+                  <FormLabel>Recheio</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select filling" />
+                        <SelectValue placeholder="Selecione o recheio" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -213,7 +232,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="details.topping"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Topping</FormLabel>
+                  <FormLabel>Cobertura</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -222,7 +241,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="marzipan" id="topping-marzipan" />
-                        <FormLabel htmlFor="topping-marzipan" className="font-normal cursor-pointer">Marzipan</FormLabel>
+                        <FormLabel htmlFor="topping-marzipan" className="font-normal cursor-pointer">Pasta Americana</FormLabel>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="ganache" id="topping-ganache" />
@@ -230,7 +249,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="buttercream" id="topping-buttercream" />
-                        <FormLabel htmlFor="topping-buttercream" className="font-normal cursor-pointer">Buttercream</FormLabel>
+                        <FormLabel htmlFor="topping-buttercream" className="font-normal cursor-pointer">Creme de Manteiga</FormLabel>
                       </div>
                     </RadioGroup>
                   </FormControl>
@@ -244,7 +263,7 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
               name="quantity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Quantity</FormLabel>
+                  <FormLabel>Quantidade</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -271,15 +290,15 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
             name="details.specialRequests"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Special Requests & Decoration</FormLabel>
+                <FormLabel>Pedidos Especiais & Decoração</FormLabel>
                 <FormControl>
                   <Textarea 
-                    placeholder="Please describe any specific decorations or special requests you have for your cake"
+                    placeholder="Por favor descreva quaisquer decorações específicas ou pedidos especiais que você tenha para o seu bolo"
                     {...field}
                   />
                 </FormControl>
                 <FormDescription>
-                  Let us know about any decorations, themes, or messages you'd like on your cake.
+                  Informe-nos sobre quaisquer decorações, temas ou mensagens que você gostaria em seu bolo.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -291,10 +310,10 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
             name="details.allergies"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Allergies or Dietary Restrictions</FormLabel>
+                <FormLabel>Alergias ou Restrições Alimentares</FormLabel>
                 <FormControl>
                   <Textarea 
-                    placeholder="Please list any allergies or dietary restrictions we should be aware of"
+                    placeholder="Por favor liste quaisquer alergias ou restrições alimentares que devemos considerar"
                     {...field}
                   />
                 </FormControl>
@@ -306,12 +325,12 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
 
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-medium">Total Price:</span>
+            <span className="text-lg font-medium">Preço Total:</span>
             <span className="text-2xl font-serif font-bold">{form.getValues('price')} MT</span>
           </div>
           
           <Button type="submit" className="w-full">
-            Add to Cart
+            Adicionar ao Carrinho
           </Button>
         </div>
       </form>
