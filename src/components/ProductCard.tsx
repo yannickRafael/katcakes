@@ -1,7 +1,9 @@
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cake } from '@/types/cake';
 import { ShoppingCart } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProductCardProps {
   cake: Cake;
@@ -9,8 +11,48 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ cake, className = '' }: ProductCardProps) => {
+  const { toast } = useToast();
+  const [isAdding, setIsAdding] = useState(false);
+
   const formatPrice = (price: number) => {
     return `${price} MT`;
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsAdding(true);
+    
+    // Add to cart logic
+    const existingCart = JSON.parse(localStorage.getItem('katcakesCart') || '[]');
+    
+    // Check if this cake is already in the cart
+    const existingIndex = existingCart.findIndex((item: Cake) => item.id === cake.id);
+    
+    if (existingIndex >= 0) {
+      // Update quantity if already in cart
+      existingCart[existingIndex].quantity = (existingCart[existingIndex].quantity || 1) + 1;
+    } else {
+      // Add new item with quantity 1
+      existingCart.push({
+        ...cake,
+        quantity: 1
+      });
+    }
+    
+    // Save back to localStorage
+    localStorage.setItem('katcakesCart', JSON.stringify(existingCart));
+    
+    // Show success message
+    toast({
+      title: "Added to cart",
+      description: `${cake.name} has been added to your cart.`,
+    });
+    
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 500);
   };
 
   return (
@@ -35,8 +77,11 @@ const ProductCard = ({ cake, className = '' }: ProductCardProps) => {
               Details
             </Link>
             <button 
-              className="bg-katcakes-black text-white p-2 rounded flex items-center justify-center hover:bg-katcakes-darkgray transition-colors"
+              className={`${
+                isAdding ? 'bg-green-600' : 'bg-katcakes-black'
+              } text-white p-2 rounded flex items-center justify-center hover:bg-katcakes-darkgray transition-colors`}
               aria-label="Add to cart"
+              onClick={handleAddToCart}
             >
               <ShoppingCart size={18} />
             </button>

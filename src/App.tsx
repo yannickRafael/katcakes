@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import CakesPage from "./pages/CakesPage";
 import CakeDetail from "./pages/CakeDetail";
 import AboutPage from "./pages/AboutPage";
+import OrderPage from "./pages/OrderPage";
+import CartPage from "./pages/CartPage";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/cakes" element={<CakesPage />} />
           <Route path="/cakes/:id" element={<CakeDetail />} />
+          <Route path="/order" element={<OrderPage />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/about" element={<AboutPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
