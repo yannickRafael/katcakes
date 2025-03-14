@@ -58,7 +58,8 @@ export {
   addDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  FirebaseUser  // Export the FirebaseUser type
 };
 
 // Helper functions for authentication and data management
