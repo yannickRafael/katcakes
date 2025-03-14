@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2, CalendarIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -101,6 +102,14 @@ const SignupPage = () => {
 
   const addBirthday = () => {
     const currentBirthdays = form.getValues().birthdays || [];
+    const lastBirthday = currentBirthdays[currentBirthdays.length - 1];
+    
+    // Check if the last birthday has both name and date
+    if (!lastBirthday.name || !lastBirthday.date) {
+      toast.error("Preencha o nome e a data do aniversariante atual antes de adicionar outro.");
+      return;
+    }
+    
     form.setValue("birthdays", [
       ...currentBirthdays,
       { name: "", date: new Date() }
