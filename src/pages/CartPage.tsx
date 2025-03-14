@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CartItem, Cake, CustomOrder } from '@/types/cake';
@@ -30,6 +29,9 @@ const CartPage = () => {
     setCartItems(updatedCart);
     setIsEmpty(updatedCart.length === 0);
     localStorage.setItem('katcakesCart', JSON.stringify(updatedCart));
+    
+    // Dispatch event to notify the Navbar component
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const handleRemoveItem = (id: string) => {

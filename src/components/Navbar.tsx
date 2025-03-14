@@ -7,6 +7,7 @@ import { Menu, X, ShoppingCart } from 'lucide-react';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
@@ -16,6 +17,41 @@ const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Effect to load cart count on initial render and listen for storage changes
+  useEffect(() => {
+    // Function to update cart count from localStorage
+    const updateCartCount = () => {
+      const savedCart = localStorage.getItem('katcakesCart');
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        setCartItemCount(parsedCart.length);
+      } else {
+        setCartItemCount(0);
+      }
+    };
+
+    // Update count on initial render
+    updateCartCount();
+
+    // Listen for storage events (when localStorage changes in other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'katcakesCart') {
+        updateCartCount();
+      }
+    };
+
+    // Custom event for same-tab updates
+    const handleCustomStorageEvent = () => updateCartCount();
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('cartUpdated', handleCustomStorageEvent);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('cartUpdated', handleCustomStorageEvent);
+    };
   }, []);
 
   const navLinks = [
@@ -59,7 +95,9 @@ const Navbar = () => {
           </Link>
           <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
             <ShoppingCart size={20} />
-            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">0</span>
+            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {cartItemCount}
+            </span>
           </Link>
         </div>
         
@@ -67,7 +105,9 @@ const Navbar = () => {
         <div className="flex items-center space-x-3 md:hidden">
           <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
             <ShoppingCart size={20} />
-            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">0</span>
+            <span className="absolute -top-1 -right-1 bg-katcakes-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              {cartItemCount}
+            </span>
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 

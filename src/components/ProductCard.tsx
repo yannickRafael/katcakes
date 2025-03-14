@@ -44,6 +44,9 @@ const ProductCard = ({ cake, className = '' }: ProductCardProps) => {
     // Save back to localStorage
     localStorage.setItem('katcakesCart', JSON.stringify(existingCart));
     
+    // Dispatch a custom event to notify the Navbar component
+    window.dispatchEvent(new Event('cartUpdated'));
+    
     // Show success message
     toast({
       title: "Added to cart",
