@@ -58,9 +58,11 @@ export {
   addDoc,
   query,
   where,
-  getDocs,
-  FirebaseUser  // Export the FirebaseUser type
+  getDocs
 };
+
+// Export the FirebaseUser type properly with 'export type'
+export type { FirebaseUser };
 
 // Helper functions for authentication and data management
 export const registerUser = async (email: string, password: string, userData: any) => {
