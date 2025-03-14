@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2, CalendarIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -20,20 +21,27 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+
+// Define a regex pattern for date validation (DD/MM/YYYY)
+const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/;
 
 const birthdaySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  date: z.date({
-    required_error: "Data de aniversário é obrigatória",
-  }),
+  date: z.string()
+    .min(1, "Data de aniversário é obrigatória")
+    .regex(dateRegex, "Data deve estar no formato DD/MM/YYYY")
+    .refine((date) => {
+      if (!dateRegex.test(date)) return false;
+      
+      // Extract day, month, and year
+      const [day, month, year] = date.split('/').map(Number);
+      
+      // Check if it's a valid date
+      const dateObj = new Date(year, month - 1, day);
+      return dateObj.getDate() === day && 
+             dateObj.getMonth() === month - 1 && 
+             dateObj.getFullYear() === year;
+    }, "Data inválida"),
 });
 
 const signupSchema = z.object({
@@ -54,14 +62,12 @@ const signupSchema = z.object({
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
-type BirthdayFormValues = z.infer<typeof birthdaySchema>;
 
 const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [birthYear, setBirthYear] = useState(new Date().getFullYear());
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -71,7 +77,7 @@ const SignupPage = () => {
       password: "",
       confirmPassword: "",
       gender: "prefiro_nao_informar",
-      birthdays: [{ name: "", date: new Date() }],
+      birthdays: [{ name: "", date: "" }],
       acceptTerms: false,
     },
   });
@@ -110,7 +116,7 @@ const SignupPage = () => {
     
     form.setValue("birthdays", [
       ...currentBirthdays,
-      { name: "", date: new Date() }
+      { name: "", date: "" }
     ]);
   };
 
@@ -122,17 +128,6 @@ const SignupPage = () => {
         currentBirthdays.filter((_, i) => i !== index)
       );
     }
-  };
-
-  const changeYear = (amount: number) => {
-    setBirthYear(prev => prev + amount);
-  };
-
-  const getYearRange = () => {
-    const currentYear = new Date().getFullYear();
-    const startYear = Math.max(1900, birthYear - 50);
-    const endYear = Math.min(currentYear, birthYear + 50);
-    return { from: new Date(startYear, 0, 1), to: new Date(endYear, 11, 31) };
   };
 
   return (
@@ -291,83 +286,12 @@ const SignupPage = () => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Data de aniversário</FormLabel>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <FormControl>
-                                      <Button
-                                        variant="outline"
-                                        className={cn(
-                                          "w-full pl-3 text-left font-normal flex justify-between",
-                                          !field.value && "text-muted-foreground"
-                                        )}
-                                      >
-                                        {field.value ? (
-                                          format(field.value, "dd/MM/yyyy")
-                                        ) : (
-                                          <span>Selecionar data</span>
-                                        )}
-                                        <CalendarIcon className="h-4 w-4 opacity-50" />
-                                      </Button>
-                                    </FormControl>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                    <div className="p-2 flex justify-between items-center border-b">
-                                      <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        onClick={() => changeYear(-10)}
-                                      >
-                                        <ChevronDown className="h-4 w-4" />
-                                        <span className="sr-only">10 anos atrás</span>
-                                      </Button>
-                                      <div className="flex gap-2 items-center">
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm"
-                                          onClick={() => changeYear(-1)}
-                                        >
-                                          <ChevronDown className="h-4 w-4" />
-                                          <span className="sr-only">Ano anterior</span>
-                                        </Button>
-                                        <span className="font-medium">{birthYear}</span>
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm"
-                                          onClick={() => changeYear(1)}
-                                        >
-                                          <ChevronUp className="h-4 w-4" />
-                                          <span className="sr-only">Próximo ano</span>
-                                        </Button>
-                                      </div>
-                                      <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        onClick={() => changeYear(10)}
-                                      >
-                                        <ChevronUp className="h-4 w-4" />
-                                        <span className="sr-only">10 anos depois</span>
-                                      </Button>
-                                    </div>
-                                    <Calendar
-                                      mode="single"
-                                      selected={field.value}
-                                      onSelect={(date) => {
-                                        if (date) {
-                                          field.onChange(date);
-                                          setBirthYear(date.getFullYear());
-                                        }
-                                      }}
-                                      defaultMonth={
-                                        field.value || new Date(birthYear, 0, 1)
-                                      }
-                                      fromYear={1900}
-                                      toYear={new Date().getFullYear()}
-                                      captionLayout="dropdown-buttons"
-                                      fromDate={getYearRange().from}
-                                      toDate={getYearRange().to}
-                                    />
-                                  </PopoverContent>
-                                </Popover>
+                                <FormControl>
+                                  <Input
+                                    placeholder="DD/MM/AAAA"
+                                    {...field}
+                                  />
+                                </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
