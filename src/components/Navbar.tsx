@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import Logo from './ui/Logo';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,9 +19,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Effect to load cart count on initial render and listen for storage changes
   useEffect(() => {
-    // Function to update cart count from localStorage
     const updateCartCount = () => {
       const savedCart = localStorage.getItem('katcakesCart');
       if (savedCart) {
@@ -33,17 +30,14 @@ const Navbar = () => {
       }
     };
 
-    // Update count on initial render
     updateCartCount();
 
-    // Listen for storage events (when localStorage changes in other tabs)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'katcakesCart') {
         updateCartCount();
       }
     };
 
-    // Custom event for same-tab updates
     const handleCustomStorageEvent = () => updateCartCount();
     
     window.addEventListener('storage', handleStorageChange);
@@ -72,7 +66,6 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <Logo />
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {navLinks.map(link => (
               <Link 
@@ -89,7 +82,6 @@ const Navbar = () => {
             ))}
           </nav>
           
-          {/* Desktop Right Links */}
           <div className="hidden md:flex items-center space-x-2">
             <Link 
               to="/login" 
@@ -105,7 +97,6 @@ const Navbar = () => {
             </Link>
           </div>
           
-          {/* Mobile Right Links */}
           <div className="flex items-center space-x-3 md:hidden">
             <Link to="/cart" className="relative p-2 hover:bg-katcakes-lightgray rounded-full transition-colors">
               <ShoppingCart size={20} />
@@ -123,7 +114,6 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
           <div className="katcakes-container mx-auto px-4 py-4">
