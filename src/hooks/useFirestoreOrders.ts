@@ -1,6 +1,6 @@
 
 import { useAuth } from "@/contexts/AuthContext";
-import { saveOrder, getUserOrders } from "@/lib/firebase";
+import { saveOrder, getUserOrders, OrderData } from "@/lib/firebase";
 import { toast } from "sonner";
 import { useCallback } from "react";
 
@@ -8,7 +8,7 @@ export function useFirestoreOrders() {
   const { currentUser } = useAuth();
 
   // Add an order to Firestore
-  const addOrderToFirestore = useCallback(async (orderData: any) => {
+  const addOrderToFirestore = useCallback(async (orderData: Omit<OrderData, 'userId' | 'createdAt' | 'status'>) => {
     if (!currentUser) {
       toast.error("Você precisa estar logado para fazer um pedido");
       return null;
@@ -25,7 +25,7 @@ export function useFirestoreOrders() {
   }, [currentUser]);
 
   // Get all orders for the current user
-  const getUserOrdersFromFirestore = useCallback(async () => {
+  const getUserOrdersFromFirestore = useCallback(async (): Promise<Array<OrderData & { id: string }>> => {
     if (!currentUser) {
       return [];
     }

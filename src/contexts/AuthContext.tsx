@@ -7,15 +7,16 @@ import {
   getUserData,
   loginUser,
   registerUser,
-  logoutUser
+  logoutUser,
+  UserData
 } from "@/lib/firebase";
 import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextProps {
   currentUser: FirebaseUser | null;
-  userData: any | null;
+  userData: UserData | null;
   login: (email: string, password: string) => Promise<{user: FirebaseUser}>;
-  signup: (email: string, password: string, userData: any) => Promise<{user: FirebaseUser}>;
+  signup: (email: string, password: string, userData: UserData) => Promise<{user: FirebaseUser}>;
   logout: () => Promise<boolean>;
   loading: boolean;
 }
@@ -32,7 +33,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  const [userData, setUserData] = useState<any | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string, userData: any) => {
+  const signup = async (email: string, password: string, userData: UserData) => {
     try {
       const result = await registerUser(email, password, userData);
       toast({

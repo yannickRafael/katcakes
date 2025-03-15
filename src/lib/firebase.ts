@@ -64,8 +64,30 @@ export {
 // Export the FirebaseUser type properly with 'export type'
 export type { FirebaseUser };
 
+// Define more specific types for user data
+export interface UserBirthday {
+  name: string;
+  date: string;
+}
+
+export interface UserData {
+  displayName: string;
+  email: string;
+  gender?: 'masculino' | 'feminino' | 'outro' | 'prefiro_nao_informar';
+  birthdays?: UserBirthday[];
+  createdAt?: string;
+  [key: string]: unknown; // For any additional fields that might be added
+}
+
+export interface OrderData {
+  userId: string;
+  createdAt: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  [key: string]: unknown; // For order-specific data
+}
+
 // Helper functions for authentication and data management
-export const registerUser = async (email: string, password: string, userData: any) => {
+export const registerUser = async (email: string, password: string, userData: UserData) => {
   try {
     // Create the user with Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -102,13 +124,13 @@ export const logoutUser = async () => {
   }
 };
 
-export const getUserData = async (userId: string) => {
+export const getUserData = async (userId: string): Promise<UserData | null> => {
   try {
     const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return docSnap.data();
+      return docSnap.data() as UserData;
     } else {
       return null;
     }
@@ -117,7 +139,7 @@ export const getUserData = async (userId: string) => {
   }
 };
 
-export const saveOrder = async (userId: string, orderData: any) => {
+export const saveOrder = async (userId: string, orderData: Omit<OrderData, 'userId' | 'createdAt' | 'status'>) => {
   try {
     const ordersRef = collection(db, "orders");
     const newOrder = await addDoc(ordersRef, {
@@ -139,11 +161,11 @@ export const getUserOrders = async (userId: string) => {
     const q = query(ordersRef, where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     
-    const orders: any[] = [];
+    const orders: Array<OrderData & { id: string }> = [];
     querySnapshot.forEach((doc) => {
       orders.push({
         id: doc.id,
-        ...doc.data()
+        ...(doc.data() as OrderData)
       });
     });
     
