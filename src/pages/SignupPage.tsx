@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +21,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/contexts/AuthContext";
+import { UserBirthday } from "@/lib/firebase";
 
-// Define a regex pattern for date validation (DD/MM/YYYY)
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/;
 
 const birthdaySchema = z.object({
@@ -34,10 +33,8 @@ const birthdaySchema = z.object({
     .refine((date) => {
       if (!dateRegex.test(date)) return false;
       
-      // Extract day, month, and year
       const [day, month, year] = date.split('/').map(Number);
       
-      // Check if it's a valid date
       const dateObj = new Date(year, month - 1, day);
       return dateObj.getDate() === day && 
              dateObj.getMonth() === month - 1 && 
@@ -90,18 +87,20 @@ const SignupPage = () => {
     setSignupError(null);
 
     try {
-      // Extract user profile data including the email field
+      const formattedBirthdays: UserBirthday[] = data.birthdays.map(birthday => ({
+        name: birthday.name || "",
+        date: birthday.date || ""
+      }));
+      
       const userProfileData = {
         displayName: data.name,
-        email: data.email, // Include the email field here
+        email: data.email,
         gender: data.gender,
-        birthdays: data.birthdays,
+        birthdays: formattedBirthdays,
       };
       
-      // Register the user with Firebase Authentication and store profile data
       await signup(data.email, data.password, userProfileData);
       
-      // Redirect to home page after successful registration
       navigate("/");
     } catch (error: any) {
       setSignupError(error.message || "Erro ao criar conta. Por favor, tente novamente.");
