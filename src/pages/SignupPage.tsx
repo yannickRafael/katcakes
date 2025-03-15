@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,9 +90,10 @@ const SignupPage = () => {
     setSignupError(null);
 
     try {
-      // Extract just the user profile data (excluding auth-related fields)
+      // Extract user profile data including the email field
       const userProfileData = {
         displayName: data.name,
+        email: data.email, // Include the email field here
         gender: data.gender,
         birthdays: data.birthdays,
       };
