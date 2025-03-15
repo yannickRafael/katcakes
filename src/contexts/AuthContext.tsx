@@ -8,7 +8,10 @@ import {
   loginUser,
   registerUser,
   logoutUser,
-  UserData
+  UserData,
+  initRecaptcha,
+  sendVerificationCode,
+  RecaptchaVerifier
 } from "@/lib/firebase";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -20,6 +23,7 @@ interface AuthContextProps {
   signup: (phoneNumber: string, userData: UserData) => Promise<{userId: string}>;
   logout: () => Promise<boolean>;
   loading: boolean;
+  sendPhoneVerification: (phoneNumber: string, buttonId: string) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -61,6 +65,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }, []);
+
+  const sendPhoneVerification = async (phoneNumber: string, buttonId: string) => {
+    try {
+      // Initialize reCAPTCHA
+      const recaptchaVerifier = initRecaptcha(buttonId);
+      
+      // Send verification code
+      const confirmationResult = await sendVerificationCode(phoneNumber, recaptchaVerifier);
+      
+      toast({
+        title: "Código enviado",
+        description: "Um código de verificação foi enviado para o seu número de telefone.",
+      });
+      
+      return confirmationResult;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao enviar código",
+        description: error.message,
+      });
+      throw error;
+    }
+  };
 
   const login = async (phoneNumber: string) => {
     try {
@@ -141,7 +169,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     signup,
     logout,
-    loading
+    loading,
+    sendPhoneVerification
   };
 
   return (

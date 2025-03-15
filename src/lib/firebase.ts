@@ -31,7 +31,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDDjc4P6ZHypmZ3gAJAvdiyrpC7muP7GM4",
   authDomain: "kat-cakes.firebaseapp.com",
   projectId: "kat-cakes",
-  storageBucket: "kat-cakes.appspot.com", // Fixed this line (was using .firebasestorage.app)
+  storageBucket: "kat-cakes.appspot.com",
   messagingSenderId: "947024220526",
   appId: "1:947024220526:web:4c715b9f1cc88648ee317f",
   measurementId: "G-10YSJX8CHR"
@@ -99,16 +99,43 @@ export interface OrderData {
   [key: string]: unknown; // For order-specific data
 }
 
+// Initialize RecaptchaVerifier
+let recaptchaVerifier: RecaptchaVerifier | null = null;
+
 // Helper functions for authentication and data management
+export const initRecaptcha = (buttonId: string) => {
+  if (recaptchaVerifier) {
+    recaptchaVerifier.clear();
+  }
+  
+  recaptchaVerifier = new RecaptchaVerifier(auth, buttonId, {
+    'size': 'invisible',
+    'callback': () => {
+      // reCAPTCHA solved, allow signInWithPhoneNumber.
+      console.log('reCAPTCHA verified');
+    },
+    'expired-callback': () => {
+      // Response expired. Ask user to solve reCAPTCHA again.
+      console.log('reCAPTCHA expired');
+      recaptchaVerifier = null;
+    }
+  });
+  
+  return recaptchaVerifier;
+};
+
 export const registerUser = async (phoneNumber: string, userData: UserData) => {
   try {
+    // Ensure phoneNumber is in E.164 format
+    const formattedPhone = formatPhoneNumber(phoneNumber);
+    
     // Generate a random user ID since we don't have Firebase Auth ID with phone auth yet
     const userId = `user_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`;
     
     // Save user data to Firestore
     await setDoc(doc(db, "users", userId), {
       ...userData,
-      phoneNumber,
+      phoneNumber: formattedPhone,
       createdAt: new Date().toISOString(),
     });
     
@@ -120,9 +147,12 @@ export const registerUser = async (phoneNumber: string, userData: UserData) => {
 
 export const loginUser = async (phoneNumber: string) => {
   try {
+    // Ensure phoneNumber is in the right format for querying
+    const formattedPhone = formatPhoneNumber(phoneNumber);
+    
     // Query Firestore to find user with this phone number
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+    const q = query(usersRef, where("phoneNumber", "==", formattedPhone));
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
@@ -135,6 +165,44 @@ export const loginUser = async (phoneNumber: string) => {
   } catch (error: any) {
     throw new Error(error.message);
   }
+};
+
+export const sendVerificationCode = async (phoneNumber: string, recaptchaVerifier: RecaptchaVerifier) => {
+  try {
+    // Ensure phoneNumber is in E.164 format
+    const formattedPhone = formatPhoneNumber(phoneNumber);
+    
+    // Send verification code
+    const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, recaptchaVerifier);
+    return confirmationResult;
+  } catch (error: any) {
+    console.error("Error sending verification code:", error);
+    throw new Error(error.message || "Failed to send verification code");
+  }
+};
+
+// Helper to format phone number to E.164 standard
+export const formatPhoneNumber = (phoneNumber: string): string => {
+  // Strip any non-numeric characters
+  let cleaned = phoneNumber.replace(/\D/g, '');
+  
+  // Handle Mozambican phone numbers (add country code if missing)
+  if (cleaned.length === 9 && cleaned.startsWith('8')) {
+    return `+258${cleaned}`;
+  }
+  
+  // If it already has the country code
+  if (cleaned.startsWith('258')) {
+    return `+${cleaned}`;
+  }
+  
+  // If it has plus but no country code
+  if (cleaned.length === 9 && !cleaned.startsWith('258')) {
+    return `+258${cleaned}`;
+  }
+  
+  // Default case, just add + if necessary
+  return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 };
 
 export const logoutUser = async () => {

@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { User, Phone, Plus, Trash2 } from "lucide-react";
+import { User, Phone, Plus, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserBirthday } from "@/lib/firebase";
 
@@ -63,7 +65,11 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
-  const { signup } = useAuth();
+  const [verificationDialogOpen, setVerificationDialogOpen] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const formData = useRef<SignupFormValues | null>(null);
+  const { signup, sendPhoneVerification } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<SignupFormValues>({
@@ -80,26 +86,49 @@ const SignupPage = () => {
   const onSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     setSignupError(null);
+    formData.current = data;
 
     try {
+      // Send verification code
+      const result = await sendPhoneVerification(data.phoneNumber, "phone-signup-button");
+      setConfirmationResult(result);
+      setVerificationDialogOpen(true);
+    } catch (error: any) {
+      setSignupError(error.message || "Erro ao criar conta. Por favor, tente novamente.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!confirmationResult || !formData.current) return;
+
+    setIsLoading(true);
+    try {
+      await confirmationResult.confirm(verificationCode);
+      
+      // After successful verification, create the user account
       // Create proper UserBirthday objects (name and date are non-optional)
-      const formattedBirthdays: UserBirthday[] = data.birthdays.map(birthday => ({
+      const formattedBirthdays: UserBirthday[] = formData.current.birthdays.map(birthday => ({
         name: birthday.name,
         date: birthday.date
       }));
       
       const userProfileData = {
-        displayName: data.name,
-        phoneNumber: data.phoneNumber,
-        gender: data.gender,
+        displayName: formData.current.name,
+        phoneNumber: formData.current.phoneNumber,
+        gender: formData.current.gender,
         birthdays: formattedBirthdays,
       };
       
-      await signup(data.phoneNumber, userProfileData);
+      await signup(formData.current.phoneNumber, userProfileData);
       
+      // Close dialog and navigate to home
+      setVerificationDialogOpen(false);
       navigate("/");
     } catch (error: any) {
-      setSignupError(error.message || "Erro ao criar conta. Por favor, tente novamente.");
+      setSignupError(error.message || "Código de verificação inválido. Por favor, tente novamente.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -345,7 +374,12 @@ const SignupPage = () => {
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                  id="phone-signup-button"
+                >
                   {isLoading ? "Registrando..." : "Criar conta"}
                 </Button>
               </form>
@@ -360,6 +394,46 @@ const SignupPage = () => {
             </div>
           </CardFooter>
         </Card>
+
+        <Dialog open={verificationDialogOpen} onOpenChange={setVerificationDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Verificação de telefone</DialogTitle>
+              <DialogDescription>
+                Digite o código de 6 dígitos enviado para seu número de telefone
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <InputOTP 
+                  maxLength={6} 
+                  value={verificationCode} 
+                  onChange={setVerificationCode}
+                  pattern="^[0-9]+$"
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              
+              <Button 
+                disabled={verificationCode.length !== 6 || isLoading}
+                onClick={handleVerifyCode}
+                className="w-full"
+              >
+                {isLoading ? "Verificando..." : "Verificar"}
+                {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

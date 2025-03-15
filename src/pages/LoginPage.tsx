@@ -1,10 +1,10 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Phone } from "lucide-react";
+import { Phone, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth } from "@/contexts/AuthContext";
 
 const phoneRegex = /^(\+258|0)?(8[234567][0-9]{7})$/;
@@ -33,8 +35,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const [verificationDialogOpen, setVerificationDialogOpen] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const { login, sendPhoneVerification } = useAuth();
   const navigate = useNavigate();
+  const phoneNumber = useRef<string>("");
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -46,13 +52,51 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     setLoginError(null);
+    phoneNumber.current = data.phoneNumber;
 
     try {
-      await login(data.phoneNumber);
-      // Redirect user to home page after successful login
-      navigate("/");
+      // First check if the user exists in Firestore
+      try {
+        const result = await login(data.phoneNumber);
+        // If login succeeds directly, navigate to home
+        navigate("/");
+        return;
+      } catch (error: any) {
+        // If user not found, show error
+        if (error.message.includes("não encontrado")) {
+          setLoginError(error.message);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // If we get here, we need to verify the phone number
+      const result = await sendPhoneVerification(data.phoneNumber, "phone-login-button");
+      setConfirmationResult(result);
+      setVerificationDialogOpen(true);
     } catch (error: any) {
       setLoginError(error.message || "Falha na autenticação. Por favor, tente novamente.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!confirmationResult) return;
+
+    setIsLoading(true);
+    try {
+      await confirmationResult.confirm(verificationCode);
+      
+      // After successful verification, try to login again
+      await login(phoneNumber.current);
+
+      // Close dialog and navigate to home
+      setVerificationDialogOpen(false);
+      navigate("/");
+    } catch (error: any) {
+      setLoginError(error.message || "Código de verificação inválido. Por favor, tente novamente.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -108,7 +152,12 @@ const LoginPage = () => {
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                  id="phone-login-button"
+                >
                   {isLoading ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
@@ -123,6 +172,46 @@ const LoginPage = () => {
             </div>
           </CardFooter>
         </Card>
+
+        <Dialog open={verificationDialogOpen} onOpenChange={setVerificationDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Verificação de telefone</DialogTitle>
+              <DialogDescription>
+                Digite o código de 6 dígitos enviado para seu número de telefone
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <InputOTP 
+                  maxLength={6} 
+                  value={verificationCode} 
+                  onChange={setVerificationCode}
+                  pattern="^[0-9]+$"
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              
+              <Button 
+                disabled={verificationCode.length !== 6 || isLoading}
+                onClick={handleVerifyCode}
+                className="w-full"
+              >
+                {isLoading ? "Verificando..." : "Verificar"}
+                {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
