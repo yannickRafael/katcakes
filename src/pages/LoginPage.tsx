@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, KeyRound, Eye, EyeOff } from "lucide-react";
+import { Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,9 +20,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
 
+const phoneRegex = /^(\+258|0)?(8[234567][0-9]{7})$/;
+
 const loginSchema = z.object({
-  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  phoneNumber: z.string()
+    .min(1, "Número de telefone é obrigatório")
+    .regex(phoneRegex, "Número de telefone inválido. Use formato moçambicano (84/85/86/87xxxxxxx)"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -30,15 +33,13 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      phoneNumber: "",
     },
   });
 
@@ -47,7 +48,7 @@ const LoginPage = () => {
     setLoginError(null);
 
     try {
-      await login(data.email, data.password);
+      await login(data.phoneNumber);
       // Redirect user to home page after successful login
       navigate("/");
     } catch (error: any) {
@@ -74,7 +75,7 @@ const LoginPage = () => {
           <CardHeader>
             <CardTitle>Entrar</CardTitle>
             <CardDescription>
-              Entre com seu email e senha para acessar sua conta
+              Entre com seu número de telefone para acessar sua conta
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -88,51 +89,18 @@ const LoginPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Número de telefone</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                           <Input
-                            placeholder="seu@email.com"
+                            placeholder="84xxxxxxx"
                             className="pl-10"
                             {...field}
                           />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <KeyRound className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            className="pl-10 pr-10"
-                            placeholder="********"
-                            {...field}
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-3 top-2.5"
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-5 w-5 text-muted-foreground" />
-                            ) : (
-                              <Eye className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </button>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -147,11 +115,6 @@ const LoginPage = () => {
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <div className="text-sm text-center">
-              <Link to="/forgot-password" className="text-katcakes-black hover:underline">
-                Esqueceu sua senha?
-              </Link>
-            </div>
             <div className="text-sm text-center">
               <span className="text-katcakes-gray">Não tem uma conta? </span>
               <Link to="/signup" className="text-katcakes-black font-medium hover:underline">

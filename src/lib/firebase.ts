@@ -8,7 +8,10 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User as FirebaseUser
+  User as FirebaseUser,
+  PhoneAuthProvider,
+  signInWithPhoneNumber,
+  RecaptchaVerifier
 } from "firebase/auth";
 import { 
   getFirestore, 
@@ -56,6 +59,9 @@ export {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  PhoneAuthProvider,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
   collection,
   doc,
   setDoc,
@@ -78,7 +84,8 @@ export interface UserBirthday {
 
 export interface UserData {
   displayName: string;
-  email: string;
+  phoneNumber: string;
+  email?: string;
   gender?: 'masculino' | 'feminino' | 'outro' | 'prefiro_nao_informar';
   birthdays?: UserBirthday[];
   createdAt?: string;
@@ -93,29 +100,38 @@ export interface OrderData {
 }
 
 // Helper functions for authentication and data management
-export const registerUser = async (email: string, password: string, userData: UserData) => {
+export const registerUser = async (phoneNumber: string, userData: UserData) => {
   try {
-    // Create the user with Firebase Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    // Generate a random user ID since we don't have Firebase Auth ID with phone auth yet
+    const userId = `user_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`;
     
-    // Save additional user data to Firestore
-    await setDoc(doc(db, "users", user.uid), {
+    // Save user data to Firestore
+    await setDoc(doc(db, "users", userId), {
       ...userData,
-      email,
+      phoneNumber,
       createdAt: new Date().toISOString(),
     });
     
-    return { user };
+    return { userId };
   } catch (error: any) {
     throw new Error(error.message);
   }
 };
 
-export const loginUser = async (email: string, password: string) => {
+export const loginUser = async (phoneNumber: string) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return { user: userCredential.user };
+    // Query Firestore to find user with this phone number
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      throw new Error("Usuário não encontrado com este número de telefone");
+    }
+    
+    // Use the first matching user
+    const userDoc = querySnapshot.docs[0];
+    return { userId: userDoc.id, userData: userDoc.data() as UserData };
   } catch (error: any) {
     throw new Error(error.message);
   }

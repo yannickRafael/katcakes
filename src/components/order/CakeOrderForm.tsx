@@ -119,209 +119,202 @@ const CakeOrderForm = ({ onSubmit }: CakeOrderFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="details.shape"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Formato do Bolo</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="round" id="shape-round" />
-                        <FormLabel htmlFor="shape-round" className="font-normal cursor-pointer">Redondo</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="rectangle" id="shape-rectangle" />
-                        <FormLabel htmlFor="shape-rectangle" className="font-normal cursor-pointer">Retangular</FormLabel>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Form fields now arranged vertically instead of in columns */}
+        <FormField
+          control={form.control}
+          name="details.shape"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Formato do Bolo</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="round" id="shape-round" />
+                    <FormLabel htmlFor="shape-round" className="font-normal cursor-pointer">Redondo</FormLabel>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="rectangle" id="shape-rectangle" />
+                    <FormLabel htmlFor="shape-rectangle" className="font-normal cursor-pointer">Retangular</FormLabel>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="details.size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tamanho</FormLabel>
-                  <Select 
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      handleSizeChange(value);
-                    }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tamanho" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="15cm">15cm</SelectItem>
-                      <SelectItem value="18cm">18cm</SelectItem>
-                      <SelectItem value="20cm">20cm</SelectItem>
-                      <SelectItem value="22cm">22cm</SelectItem>
-                      <SelectItem value="30cm">30cm</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <FormField
+          control={form.control}
+          name="details.size"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tamanho</FormLabel>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  handleSizeChange(value);
+                }}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tamanho" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="15cm">15cm</SelectItem>
+                  <SelectItem value="18cm">18cm</SelectItem>
+                  <SelectItem value="20cm">20cm</SelectItem>
+                  <SelectItem value="22cm">22cm</SelectItem>
+                  <SelectItem value="30cm">30cm</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <FormField
-              control={form.control}
-              name="details.flavor"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sabor</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o sabor" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {FLAVORS.map((flavor) => (
-                        <SelectItem key={flavor} value={flavor}>{flavor}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+        <FormField
+          control={form.control}
+          name="details.flavor"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sabor</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o sabor" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {FLAVORS.map((flavor) => (
+                    <SelectItem key={flavor} value={flavor}>{flavor}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
           
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="details.filling"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Recheio</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o recheio" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {FILLINGS.map((filling) => (
-                        <SelectItem key={filling} value={filling}>{filling}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="details.topping"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Cobertura</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="marzipan" id="topping-marzipan" />
-                        <FormLabel htmlFor="topping-marzipan" className="font-normal cursor-pointer">Pasta Americana</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="ganache" id="topping-ganache" />
-                        <FormLabel htmlFor="topping-ganache" className="font-normal cursor-pointer">Ganache</FormLabel>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="buttercream" id="topping-buttercream" />
-                        <FormLabel htmlFor="topping-buttercream" className="font-normal cursor-pointer">Creme de Manteiga</FormLabel>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantidade</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      {...field} 
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value);
-                        field.onChange(value);
-                        handleQuantityChange(value);
-                      }} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <FormField
-            control={form.control}
-            name="details.specialRequests"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pedidos Especiais & Decoração</FormLabel>
+        <FormField
+          control={form.control}
+          name="details.filling"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Recheio</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <Textarea 
-                    placeholder="Por favor descreva quaisquer decorações específicas ou pedidos especiais que você tenha para o seu bolo"
-                    {...field}
-                  />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o recheio" />
+                  </SelectTrigger>
                 </FormControl>
-                <FormDescription>
-                  Informe-nos sobre quaisquer decorações, temas ou mensagens que você gostaria em seu bolo.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <SelectContent>
+                  {FILLINGS.map((filling) => (
+                    <SelectItem key={filling} value={filling}>{filling}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="details.allergies"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Alergias ou Restrições Alimentares</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Por favor liste quaisquer alergias ou restrições alimentares que devemos considerar"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="details.topping"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Cobertura</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="marzipan" id="topping-marzipan" />
+                    <FormLabel htmlFor="topping-marzipan" className="font-normal cursor-pointer">Pasta Americana</FormLabel>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="ganache" id="topping-ganache" />
+                    <FormLabel htmlFor="topping-ganache" className="font-normal cursor-pointer">Ganache</FormLabel>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="buttercream" id="topping-buttercream" />
+                    <FormLabel htmlFor="topping-buttercream" className="font-normal cursor-pointer">Creme de Manteiga</FormLabel>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="quantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantidade</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  min="1" 
+                  max="10" 
+                  {...field} 
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    field.onChange(value);
+                    handleQuantityChange(value);
+                  }} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="details.specialRequests"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Pedidos Especiais & Decoração</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Por favor descreva quaisquer decorações específicas ou pedidos especiais que você tenha para o seu bolo"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                Informe-nos sobre quaisquer decorações, temas ou mensagens que você gostaria em seu bolo.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="details.allergies"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Alergias ou Restrições Alimentares</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Por favor liste quaisquer alergias ou restrições alimentares que devemos considerar"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between mb-6">

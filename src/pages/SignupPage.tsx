@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, KeyRound, User, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
+import { User, Phone, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { UserBirthday } from "@/lib/firebase";
 
 const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/;
+const phoneRegex = /^(\+258|0)?(8[234567][0-9]{7})$/;
 
 const birthdaySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -44,9 +46,9 @@ const birthdaySchema = z.object({
 
 const signupSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-  confirmPassword: z.string().min(1, "Confirmar senha é obrigatório"),
+  phoneNumber: z.string()
+    .min(1, "Número de telefone é obrigatório")
+    .regex(phoneRegex, "Número de telefone inválido. Use formato moçambicano (84/85/86/87xxxxxxx)"),
   gender: z.enum(["masculino", "feminino", "outro", "prefiro_nao_informar"], {
     required_error: "Gênero é obrigatório",
   }),
@@ -54,9 +56,6 @@ const signupSchema = z.object({
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos e condições",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -64,8 +63,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -73,9 +70,7 @@ const SignupPage = () => {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      phoneNumber: "",
       gender: "prefiro_nao_informar",
       birthdays: [{ name: "", date: "" }],
       acceptTerms: false,
@@ -87,19 +82,20 @@ const SignupPage = () => {
     setSignupError(null);
 
     try {
+      // Create proper UserBirthday objects (name and date are non-optional)
       const formattedBirthdays: UserBirthday[] = data.birthdays.map(birthday => ({
-        name: birthday.name || "",
-        date: birthday.date || ""
+        name: birthday.name,
+        date: birthday.date
       }));
       
       const userProfileData = {
         displayName: data.name,
-        email: data.email,
+        phoneNumber: data.phoneNumber,
         gender: data.gender,
         birthdays: formattedBirthdays,
       };
       
-      await signup(data.email, data.password, userProfileData);
+      await signup(data.phoneNumber, userProfileData);
       
       navigate("/");
     } catch (error: any) {
@@ -186,15 +182,15 @@ const SignupPage = () => {
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Número de telefone</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <Phone className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                           <Input
-                            placeholder="seu@email.com"
+                            placeholder="84xxxxxxx"
                             className="pl-10"
                             {...field}
                           />
@@ -321,72 +317,6 @@ const SignupPage = () => {
                     </p>
                   )}
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <KeyRound className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            className="pl-10 pr-10"
-                            placeholder="********"
-                            {...field}
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-3 top-2.5"
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-5 w-5 text-muted-foreground" />
-                            ) : (
-                              <Eye className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirmar senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <KeyRound className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type={showConfirmPassword ? "text" : "password"}
-                            className="pl-10 pr-10"
-                            placeholder="********"
-                            {...field}
-                          />
-                          <button
-                            type="button"
-                            className="absolute right-3 top-2.5"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          >
-                            {showConfirmPassword ? (
-                              <EyeOff className="h-5 w-5 text-muted-foreground" />
-                            ) : (
-                              <Eye className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={form.control}

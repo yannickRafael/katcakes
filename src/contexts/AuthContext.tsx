@@ -15,8 +15,9 @@ import { useToast } from "@/components/ui/use-toast";
 interface AuthContextProps {
   currentUser: FirebaseUser | null;
   userData: UserData | null;
-  login: (email: string, password: string) => Promise<{user: FirebaseUser}>;
-  signup: (email: string, password: string, userData: UserData) => Promise<{user: FirebaseUser}>;
+  userId: string | null;
+  login: (phoneNumber: string) => Promise<{userId: string, userData: UserData}>;
+  signup: (phoneNumber: string, userData: UserData) => Promise<{userId: string}>;
   logout: () => Promise<boolean>;
   loading: boolean;
 }
@@ -34,31 +35,42 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      if (user) {
-        try {
-          const data = await getUserData(user.uid);
-          setUserData(data);
-        } catch (error) {
+    // Check if user ID is stored in localStorage
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+      // Fetch user data from Firestore
+      getUserData(storedUserId)
+        .then(data => {
+          if (data) {
+            setUserData(data);
+          }
+        })
+        .catch(error => {
           console.error("Error fetching user data:", error);
-        }
-      } else {
-        setUserData(null);
-      }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
       setLoading(false);
-    });
-
-    return unsubscribe;
+    }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (phoneNumber: string) => {
     try {
-      const result = await loginUser(email, password);
+      const result = await loginUser(phoneNumber);
+      
+      // Store user ID in localStorage
+      localStorage.setItem('userId', result.userId);
+      setUserId(result.userId);
+      setUserData(result.userData);
+      
       toast({
         title: "Login bem-sucedido",
         description: "Você foi autenticado com sucesso.",
@@ -74,9 +86,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string, userData: UserData) => {
+  const signup = async (phoneNumber: string, userData: UserData) => {
     try {
-      const result = await registerUser(email, password, userData);
+      const result = await registerUser(phoneNumber, userData);
+      
+      // Store user ID in localStorage
+      localStorage.setItem('userId', result.userId);
+      setUserId(result.userId);
+      setUserData(userData);
+      
       toast({
         title: "Conta criada com sucesso",
         description: "Sua conta foi criada e você está logado.",
@@ -95,6 +113,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await logoutUser();
+      
+      // Clear local storage
+      localStorage.removeItem('userId');
+      setUserId(null);
+      setUserData(null);
+      
       toast({
         title: "Logout bem-sucedido",
         description: "Você saiu da sua conta.",
@@ -113,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     currentUser,
     userData,
+    userId,
     login,
     signup,
     logout,

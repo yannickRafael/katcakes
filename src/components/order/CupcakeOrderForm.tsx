@@ -94,55 +94,54 @@ const CupcakeOrderForm = ({ onSubmit }: CupcakeOrderFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="details.flavor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sabor</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o sabor" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {FLAVORS.map((flavor) => (
-                      <SelectItem key={flavor} value={flavor}>{flavor}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="details.topping"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cobertura</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a cobertura" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {VALID_TOPPINGS.map((topping) => (
-                      <SelectItem key={topping} value={topping}>
-                        {PORTUGUESE_TOPPINGS[topping]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        {/* Form fields arranged vertically */}
+        <FormField
+          control={form.control}
+          name="details.flavor"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Sabor</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o sabor" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {FLAVORS.map((flavor) => (
+                    <SelectItem key={flavor} value={flavor}>{flavor}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="details.topping"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cobertura</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a cobertura" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {VALID_TOPPINGS.map((topping) => (
+                    <SelectItem key={topping} value={topping}>
+                      {PORTUGUESE_TOPPINGS[topping]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
