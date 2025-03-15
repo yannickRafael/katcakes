@@ -24,12 +24,11 @@ import {
 } from "firebase/firestore";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDDjc4P6ZHypmZ3gAJAvdiyrpC7muP7GM4",
   authDomain: "kat-cakes.firebaseapp.com",
   projectId: "kat-cakes",
-  storageBucket: "kat-cakes.firebasestorage.app",
+  storageBucket: "kat-cakes.appspot.com", // Fixed this line (was using .firebasestorage.app)
   messagingSenderId: "947024220526",
   appId: "1:947024220526:web:4c715b9f1cc88648ee317f",
   measurementId: "G-10YSJX8CHR"
@@ -37,7 +36,14 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let analytics;
+try {
+  // Analytics might fail in environments that don't support it (like SSR or when cookies are blocked)
+  analytics = getAnalytics(app);
+} catch (error) {
+  console.warn("Firebase analytics initialization failed:", error);
+}
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
@@ -61,7 +67,7 @@ export {
   getDocs
 };
 
-// Export the FirebaseUser type properly with 'export type'
+// Export interface and types
 export type { FirebaseUser };
 
 // Define more specific types for user data
