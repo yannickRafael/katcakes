@@ -11,7 +11,8 @@ import {
   UserData,
   initRecaptcha,
   sendVerificationCode,
-  RecaptchaVerifier
+  RecaptchaVerifier,
+  getErrorMessage
 } from "@/lib/firebase";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -57,6 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         .catch(error => {
           console.error("Error fetching user data:", error);
+          toast({
+            variant: "destructive",
+            title: "Erro ao carregar perfil",
+            description: error.message || "Não foi possível carregar seus dados. Tente fazer login novamente.",
+          });
+          // If we can't get user data, clear localStorage and state
+          localStorage.removeItem('userId');
+          setUserId(null);
         })
         .finally(() => {
           setLoading(false);
@@ -64,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   const sendPhoneVerification = async (phoneNumber: string, buttonId: string) => {
     try {
@@ -81,10 +90,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       return confirmationResult;
     } catch (error: any) {
+      console.error("Phone verification error:", error);
+      
+      // Check if it's a Firebase error with a code
+      if (error.code && typeof error.code === 'string') {
+        const errorMessage = getErrorMessage(error.code);
+        toast({
+          variant: "destructive",
+          title: "Erro ao enviar código",
+          description: errorMessage,
+        });
+        throw new Error(errorMessage);
+      }
+      
+      // Network timeout errors
+      if (error.message && error.message.includes('Timeout')) {
+        toast({
+          variant: "destructive",
+          title: "Tempo limite excedido",
+          description: "A operação demorou muito tempo. Verifique sua conexão de internet e tente novamente.",
+        });
+        throw new Error("Tempo limite excedido. Verifique sua conexão e tente novamente.");
+      }
+      
+      // Default fallback for other errors
       toast({
         variant: "destructive",
         title: "Erro ao enviar código",
-        description: error.message,
+        description: error.message || "Não foi possível enviar o código de verificação.",
       });
       throw error;
     }
@@ -105,10 +138,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return result;
     } catch (error: any) {
+      // Clear any potentially corrupted session data
+      localStorage.removeItem('userId');
+      setUserId(null);
+      setUserData(null);
+      
+      console.error("Login error:", error);
+      
+      // Check if it's a Firebase error with a code
+      if (error.code && typeof error.code === 'string') {
+        const errorMessage = getErrorMessage(error.code);
+        toast({
+          variant: "destructive",
+          title: "Erro ao fazer login",
+          description: errorMessage,
+        });
+        throw new Error(errorMessage);
+      }
+      
+      // Network timeout errors
+      if (error.message && error.message.includes('Timeout')) {
+        toast({
+          variant: "destructive",
+          title: "Tempo limite excedido",
+          description: "A operação demorou muito tempo. Verifique sua conexão de internet e tente novamente.",
+        });
+        throw new Error("Tempo limite excedido. Verifique sua conexão e tente novamente.");
+      }
+      
+      // Default fallback for other errors
       toast({
         variant: "destructive",
         title: "Erro ao fazer login",
-        description: error.message,
+        description: error.message || "Não foi possível autenticar. Tente novamente.",
       });
       throw error;
     }
@@ -129,10 +191,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return result;
     } catch (error: any) {
+      // Clear any potentially corrupted session data
+      localStorage.removeItem('userId');
+      setUserId(null);
+      setUserData(null);
+      
+      console.error("Signup error:", error);
+      
+      // Check if it's a Firebase error with a code
+      if (error.code && typeof error.code === 'string') {
+        const errorMessage = getErrorMessage(error.code);
+        toast({
+          variant: "destructive",
+          title: "Erro ao criar conta",
+          description: errorMessage,
+        });
+        throw new Error(errorMessage);
+      }
+      
+      // Network timeout errors
+      if (error.message && error.message.includes('Timeout')) {
+        toast({
+          variant: "destructive",
+          title: "Tempo limite excedido",
+          description: "A operação demorou muito tempo. Verifique sua conexão de internet e tente novamente.",
+        });
+        throw new Error("Tempo limite excedido. Verifique sua conexão e tente novamente.");
+      }
+      
+      // Default fallback for other errors
       toast({
         variant: "destructive",
-        title: "Erro ao criar conta",
-        description: error.message,
+          title: "Erro ao criar conta",
+          description: error.message || "Não foi possível criar a conta. Tente novamente.",
       });
       throw error;
     }
@@ -153,12 +244,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return true;
     } catch (error: any) {
+      console.error("Logout error:", error);
+      
+      // Check if it's a Firebase error with a code
+      if (error.code && typeof error.code === 'string') {
+        const errorMessage = getErrorMessage(error.code);
+        toast({
+          variant: "destructive",
+          title: "Erro ao sair",
+          description: errorMessage,
+        });
+        throw new Error(errorMessage);
+      }
+      
+      // Even if logout fails, we should clear client-side session data
+      localStorage.removeItem('userId');
+      setUserId(null);
+      setUserData(null);
+      
+      // Network timeout errors
+      if (error.message && error.message.includes('Timeout')) {
+        toast({
+          variant: "destructive",
+          title: "Aviso",
+          description: "Logout realizado localmente, mas houve um problema de comunicação com o servidor.",
+        });
+        return true; // Return true since we've logged out locally
+      }
+      
+      // Default fallback for other errors
       toast({
         variant: "destructive",
         title: "Erro ao sair",
-        description: error.message,
+        description: error.message || "Problemas ao sair da conta, mas sessão foi encerrada localmente.",
       });
-      throw error;
+      return true; // Return true since we've logged out locally despite the error
     }
   };
 
